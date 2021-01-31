@@ -10,7 +10,7 @@
         Title="BoutonsCirculaires" Height="1000" Width="1650" Top="20" Left="50">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="60"/>
+            <RowDefinition Height="65"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -43,50 +43,46 @@
                 </Grid.RowDefinitions>
 
                 <!--INTEGERS-->
-
                 <Label Grid.Row="0" Grid.Column="0" Content="Nombre de boutons"/>
                 <Label Grid.Row="2" Grid.Column="0" Content="Valeur unitaire max"/>
 
-                <XceedToolkit:IntegerUpDown Grid.Row="0" Grid.Column="1" Value="{Binding nbrButtons}" Width="50" Minimum="2" />
-                <XceedToolkit:IntegerUpDown Grid.Row="2" Grid.Column="1" Value="{Binding valUnitaireMax}" Width="50" Minimum="2"/>
+                <XceedToolkit:IntegerUpDown Grid.Row="0" Grid.Column="1" Value="{Binding nbrButtons}" Width="50" Minimum="2" Height="25" />
+                <XceedToolkit:IntegerUpDown Grid.Row="2" Grid.Column="1" Value="{Binding valUnitaireMax}" Width="50" Minimum="2" Height="25"/>
 
                 <!--PIXELS-->
-
                 <Label Grid.Row="0" Grid.Column="3" Content="Diamètre (pixels)"/>
                 <Label Grid.Row="2" Grid.Column="3" Content="Epaisseur (pixels)"/>
 
+                <XceedToolkit:IntegerUpDown Grid.Row="0" Grid.Column="4" Value="{Binding diametre}"  Width="50" Minimum="16" Height="25"/>
+                <XceedToolkit:IntegerUpDown Grid.Row="2" Grid.Column="4" Value="{Binding epaisseur}"  Width="50" Minimum="0" Height="25"/>
 
-                <XceedToolkit:IntegerUpDown Grid.Row="0" Grid.Column="4" Value="{Binding diametre}"  Width="50" Minimum="16"/>
-                <XceedToolkit:IntegerUpDown Grid.Row="2" Grid.Column="4" Value="{Binding epaisseur}"  Width="50" Minimum="0"/>
+
+                <!--Angle start-->
+                <Label Grid.Row="0" Grid.Column="6" Content="Angle"/>
+
+                <XceedToolkit:IntegerUpDown Grid.Row="0" Grid.Column="7" Value="{Binding angleDegres_OrigineParRapportAX}" Width="50" Height="25" Minimum="-179" Maximum="180" />
 
 
                 <!--COULEURS-->
+                <Label Grid.Row="0" Grid.Column="9" Content="Couleur bouton"/>
+                <Label Grid.Row="2" Grid.Column="9" Content="Couleur fond"/>
 
-                <Label Grid.Row="0" Grid.Column="6" Content="Couleur"/>
-                <Label Grid.Row="2" Grid.Column="6" Content="Couleur"/>
-
-                <XceedToolkit:ColorPicker Grid.Row="0" Grid.Column="7" 
+                <XceedToolkit:ColorPicker Grid.Row="0" Grid.Column="10" 
                                               SelectedColor="{Binding couleur}"
                                               DisplayColorAndName="False" 
                                               Width="30"
                                               AvailableColorsSortingMode="HueSaturationBrightness"
                                               ShowDropDownButton="False"/>
 
-                <XceedToolkit:ColorPicker Grid.Row="2" Grid.Column="7" 
+                <XceedToolkit:ColorPicker Grid.Row="2" Grid.Column="10" 
                                               SelectedColor="{Binding couleurBackground}"
                                               DisplayColorAndName="False" 
                                               Width="30"
                                               AvailableColorsSortingMode="HueSaturationBrightness"
                                               ShowDropDownButton="False"/>
-
-
-                <Label Grid.Row="0" Grid.Column="9" Content="angleDegres_OrigineParRapportAX"/>
-
-                <XceedToolkit:IntegerUpDown Grid.Row="0" Grid.Column="10" Value="{Binding angleDegres_OrigineParRapportAX}" Width="50" Minimum="-179" Maximum="180" />
-
             </Grid>
-
-            <Button Grid.Column="1" Content="Compute" Click="Compute" Margin="5" Padding="5"/>
+            
+            <Image Grid.Column="1"  MouseUp="Compute" Source="ButtonPlay.png" RenderOptions.BitmapScalingMode="Fant" Height="48"/>
 
         </Grid>
 
@@ -96,7 +92,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <ListView Grid.Column="0" x:Name="lv" />
+            <ListView Grid.Column="0" x:Name="lv" SelectionChanged="lv_sel_change" />
 
             <ListView Grid.Column="1" x:Name="LV" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListView.Background>

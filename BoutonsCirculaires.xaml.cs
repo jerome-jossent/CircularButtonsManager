@@ -131,6 +131,8 @@ namespace EMGU.CV
         double _angleDegres_OrigineParRapportAX = 90;
         #endregion
 
+        Dictionary<string, Proposition> propositions;
+
         public BoutonsCirculaires()
         {
             InitializeComponent();
@@ -139,7 +141,7 @@ namespace EMGU.CV
         }
 
         #region COMPUTE (MACRO)
-        private void Compute(object sender, RoutedEventArgs e)
+        void Compute(object sender, RoutedEventArgs e)
         {
             LV.Items.Clear();
             System.Threading.Thread thread = new System.Threading.Thread(Compute);
@@ -148,6 +150,8 @@ namespace EMGU.CV
 
         void Compute()
         {
+            propositions = new Dictionary<string, Proposition>();
+
             Dictionary<int, List<List<int>>> operations = OperationsGenerator(nbrButtons, nbrButtons, valUnitaireMax);
 
             Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
@@ -155,23 +159,13 @@ namespace EMGU.CV
                 {
                     lv.Items.Clear();
                     foreach (List<List<int>> item in operations.Values)
-                    {
                         foreach (List<int> entiers in item)
-                        {
-                            lv.Items.Add(string.Join(" + ", entiers));
-                        }
-                    }
+                            lv.Items.Add(Proposition.SetSignature(entiers));
                 }));
 
-
-
-
-
             List<MCvScalar> couleurs = new List<MCvScalar>() { new MCvScalar(couleur.B, couleur.G, couleur.R, couleur.A) };
-            Compute(operations, 
-                    diametre, 
-                    epaisseur, 
-                    new MCvScalar(couleurBackground.B, couleurBackground.G, couleurBackground.R, couleurBackground.A), 
+            Compute(operations, diametre, epaisseur,
+                    new MCvScalar(couleurBackground.B, couleurBackground.G, couleurBackground.R, couleurBackground.A),
                     couleurs);
         }
 
@@ -204,7 +198,7 @@ namespace EMGU.CV
 
                 foreach (List<int> entiers in operations[x])
                 {
-                    string titre = string.Join(" + ", entiers);
+                    string titre = Proposition.SetSignature(entiers);
                     Emgu.CV.Image<Rgba, byte> image = DrawRings(diametre,
                        epaisseur,
                        couleur,
@@ -213,11 +207,65 @@ namespace EMGU.CV
                        angleDegres_OrigineParRapportAX
                        );
 
+                    Image<Gray, byte> gray = new Image<Gray, byte>(image.Width, image.Height);
+                    Image<Gray, byte> binaire = new Image<Gray, byte>(image.Width, image.Height);
+
+                    //Alpha to WHITE
+                    SETAlphaPixelToColorPixel(image, new MCvScalar(255, 255, 255, 255));
+
+                    CvInvoke.CvtColor(image.Mat, gray, ColorConversion.Bgra2Gray);//color to grayscale
+                    CvInvoke.Threshold(gray, binaire, 100, 255, ThresholdType.Binary); //Binary
+                    CvInvoke.BitwiseNot(binaire, binaire); //Logical NOT
+
+
+                    //Emgu.CV.Image<Gray, byte> gray = Emgu.CV.CvInvoke. cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                    //gray = cv2.medianBlur(gray, 9)
+                    //edges = cv2.Canny(gray, 10, 25)
+                    //_, contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                    //for c in contours:
+                    //    rect = cv2.minAreaRect(c)
+                    //    box = cv2.boxPoints(rect)
+                    //    area = cv2.contourArea(box)
+                    //    ratio = area / size
+                    //    if ratio < 0.015:
+                    //        continue
+
+                    //Mat bords = new Mat();
+                    //CvInvoke.Canny(binaire, bords, 10, 25);
+                    Emgu.CV.Util.VectorOfVectorOfPoint contours = new Emgu.CV.Util.VectorOfVectorOfPoint();
+                    Mat hierarchy = new Mat();
+
+                    CvInvoke.FindContours(binaire, contours, hierarchy, RetrType.External, ChainApproxMethod.ChainApproxSimple);
+                    //CvInvoke.DrawContours(image.Mat, contours, -1, new MCvScalar(0, 255, 0));
+
+                    Dictionary<int, double> dict = new Dictionary<int, double>();
+                    for (int i = 0; i < contours.Size; i++)
+                    {
+                        double aera = CvInvoke.ContourArea(contours[i]);
+                        System.Drawing.Rectangle rect = CvInvoke.BoundingRectangle(contours[i]);
+
+                        dict.Add(i, aera);
+
+                    }
+                    //var item = dict.OrderBy(v => v.Value).Take(5);
+                    foreach (var it in dict)//item)
+                    {
+                        int key = int.Parse(it.Key.ToString());
+                        System.Drawing.Rectangle rect = CvInvoke.BoundingRectangle(contours[key]);
+                        CvInvoke.Rectangle(image.Mat, rect, new MCvScalar(0, 0, 255), 1);
+                    }
+
+
+
+
                     //ajout de l'image dans l'interface
                     Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
                             new Action(() =>
                             {
-                                LV.Items.Add(AddImageToIHM(image.Mat, titre));
+                                //Proposition_UC pUC = AddImageToIHM();
+                                Proposition p = new Proposition(entiers, image.Mat, titre, this);
+                                propositions.Add(titre, p);
+                                LV.Items.Add(p.pUC);
                             }));
                 }
             }
@@ -230,13 +278,9 @@ namespace EMGU.CV
             //génère toutes les sommes possibles (uniques, valeurs croissantes)
             Dictionary<string, List<int>> val = new Dictionary<string, List<int>>();
             for (int i = 0; i < valUnitaireMax + 1; i++)
-            {
                 for (int j = 0; j < valUnitaireMax + 1; j++)
-                {
                     for (int k = 0; k < valUnitaireMax + 1; k++)
-                    {
                         for (int l = 0; l < valUnitaireMax + 1; l++)
-                        {
                             if (i <= j && j <= k && k <= l)
                             {
                                 string clef = "";
@@ -254,10 +298,6 @@ namespace EMGU.CV
                                         else if (l > 0) val.Add(clef, new List<int>() { l });
                                     }
                             }
-                        }
-                    }
-                }
-            }
 
             //rangement par somme
             Dictionary<int, List<List<int>>> operations = new Dictionary<int, List<List<int>>>();
@@ -301,8 +341,10 @@ namespace EMGU.CV
             {
                 //cercle extèrieur
                 CvInvoke.Circle(iMAGE, centre, rayons[i].Item1 - separation_epaisseur * 2, couleur, -1);
+
                 //cercle intérieur (/!\ attention écrase tout l'intérieur !)
-                CvInvoke.Circle(iMAGE, centre, rayons[i].Item2, couleur_arriereplan, -1);
+                if (rayons[i].Item2 > 0)
+                    CvInvoke.Circle(iMAGE, centre, rayons[i].Item2, couleur_arriereplan, -1);
 
                 //dessine les séparations 
                 if (nbrBoutonsParAnneau[nbrAnneaux - 1 - i] > 1)
@@ -398,40 +440,56 @@ namespace EMGU.CV
         }
         #endregion
 
-        #region AddImageToIHM
-        FrameworkElement AddImageToIHM(Emgu.CV.Image<Rgba, byte> image, string txt = "")
+        void lv_sel_change(object sender, SelectionChangedEventArgs e)
         {
-            BitmapSource img = ToBitmapSource(image);
-            return AddImageToIHM(img, txt);
+            LV.SelectedItem = propositions[lv.SelectedItem.ToString()].pUC;
         }
-        FrameworkElement AddImageToIHM(Mat mat, string txt = "")
+
+        internal void del(Proposition proposition)
         {
-            BitmapSource img = ToBitmapSource(mat);
-            return AddImageToIHM(img, txt);
+            LV.Items.Remove(proposition.pUC);
+            lv.Items.Remove(proposition.signature);
         }
-        FrameworkElement AddImageToIHM(BitmapSource img, string txt = "")
-        {
-            Image wpfImage = new Image();
-            wpfImage.Width = img.Width;
-            wpfImage.Source = img;
 
-            if (txt != "")
-            {
-                Label lbl = new Label();
-                lbl.Content = txt;
-                lbl.HorizontalContentAlignment = HorizontalAlignment.Center;
+        //#region AddImageToIHM
+        //Proposition_UC AddImageToIHM(Emgu.CV.Image<Rgba, byte> image, string txt = "")
+        //{
+        //    BitmapSource img = ToBitmapSource(image);
+        //    return AddImageToIHM(img, txt);
+        //}
+        //Proposition_UC AddImageToIHM(Mat mat, string txt = "")
+        //{
+        //    BitmapSource img = ToBitmapSource(mat);
+        //    return AddImageToIHM(img, txt);
+        //}
+        //Proposition_UC AddImageToIHM(BitmapSource img, string txt = "")
+        //{
+        //    Proposition_UC pUC = new Proposition_UC();
 
-                StackPanel stackPanel = new StackPanel();
-                stackPanel.Orientation = System.Windows.Controls.Orientation.Vertical;
+        //    pUC.wpfImage = new Image();
+        //    pUC.wpfImage.Width = img.Width;
+        //    pUC.wpfImage.Source = img;
 
-                stackPanel.Children.Add(wpfImage);
-                stackPanel.Children.Add(lbl);
-                return stackPanel;
-            }
-            else
-                return wpfImage;
-        }
-        #endregion
+        //    pUC.lbl.Content = txt;
+        //    //if (txt != "")
+        //    //{
+        //    //    Label lbl = new Label();
+        //    //    lbl.Content = txt;
+        //    //    lbl.HorizontalContentAlignment = HorizontalAlignment.Center;
+
+        //    //    StackPanel stackPanel = new StackPanel();
+        //    //    stackPanel.Orientation = System.Windows.Controls.Orientation.Vertical;
+
+        //    //    stackPanel.Children.Add(wpfImage);
+        //    //    stackPanel.Children.Add(lbl);
+        //    //    return stackPanel;
+        //    //}
+        //    //else
+        //    //    return wpfImage;
+
+        //    return pUC;
+        //}
+        //#endregion
 
         #region CONVERSION
         [DllImport("gdi32")]
@@ -459,6 +517,28 @@ namespace EMGU.CV
             }
         }
         #endregion
+
+        void SETAlphaPixelToColorPixel(Emgu.CV.Image<Rgba, byte> image, MCvScalar couleur)
+        {
+            int rows = image.Rows;
+            int cols = image.Cols;
+            //Byte[,,] data = image.Data;
+
+            for (int y = 0; y < rows; ++y)
+            {
+                for (int x = 0; x < cols; ++x)
+                {
+                    if (image.Data[x, y, 3] == 0)
+                    {
+                        image.Data[x, y, 0] = (byte)couleur.V0;
+                        image.Data[x, y, 1] = (byte)couleur.V1;
+                        image.Data[x, y, 2] = (byte)couleur.V2;
+                        image.Data[x, y, 3] = (byte)couleur.V3;
+                    }
+                }
+            }
+        }
+
 
         #region CODES EN VRAC
         void SETPixelByCode(int D_ext)
@@ -549,6 +629,5 @@ namespace EMGU.CV
             #endregion
         }
         #endregion
-
     }
 }
