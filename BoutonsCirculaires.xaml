@@ -1,0 +1,67 @@
+﻿<Window x:Class="EMGU.CV.BoutonsCirculaires"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EMGU.CV"
+        mc:Ignorable="d"
+        Title="BoutonsCirculaires" Height="1000" Width="1650" Top="20" Left="50">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Menu Grid.Row="0">
+            <MenuItem Header="Compute" Click="Compute">
+
+            </MenuItem>
+        </Menu>
+
+        <!--<ListView Grid.Row="1" x:Name="LV">
+            <ListView.Background>
+                <ImageBrush ImageSource="/damier.bmp" TileMode="Tile" ViewportUnits="Absolute" Viewport="0,0,32,32"/>
+            </ListView.Background>
+        </ListView>-->
+
+        <ListView Grid.Row="1" x:Name="LV" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListView.Background>
+                <ImageBrush ImageSource="/damier.bmp" TileMode="Tile" ViewportUnits="Absolute" Viewport="0,0,32,32"/>
+                <!--<SolidColorBrush Color="Gray"  />-->
+            </ListView.Background>
+            
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel />
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+            <Rectangle Margin="5" Width="100" Height="100" Fill="Beige" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="PowderBlue" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FF9ACD32" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFF6347" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FF6495ED" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFFA500" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFFD700" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFF4500" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FF316915" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FF8E32A7" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FFECBADC" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FFE6D84F" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="Beige" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="PowderBlue" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FF9ACD32" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFF6347" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FF6495ED" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFFA500" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFFD700" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFF4500" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FF316915" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FF8E32A7" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FFECBADC" />
+            <Rectangle Margin="5" Width="100" Height="100" Fill="#FFE6D84F" />
+        </ListView>
+
+
+
+    </Grid>
+</Window>
