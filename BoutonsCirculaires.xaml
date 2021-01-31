@@ -5,67 +5,138 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EMGU.CV"
         mc:Ignorable="d"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+         xmlns:XceedToolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+
         Title="BoutonsCirculaires" Height="1000" Width="1650" Top="20" Left="50">
-  <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="30"/>
-      <RowDefinition Height="*"/>
-    </Grid.RowDefinitions>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-    <Menu Grid.Row="0">
-      <MenuItem Header="Nombre de boutons" >
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
 
-        <xctk:IntegerUpDown Value="1564" />
-      </MenuItem>
+            <Grid Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="20" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="5" />
+                </Grid.RowDefinitions>
 
-      <MenuItem Header="Compute" Click="Compute"/>
-    </Menu>
+                <!--INTEGERS-->
 
-    <!--<ListView Grid.Row="1" x:Name="LV">
-            <ListView.Background>
-                <ImageBrush ImageSource="/damier.bmp" TileMode="Tile" ViewportUnits="Absolute" Viewport="0,0,32,32"/>
-            </ListView.Background>
-        </ListView>-->
+                <Label Grid.Row="0" Grid.Column="0" Content="Nombre de boutons"/>
+                <Label Grid.Row="2" Grid.Column="0" Content="Valeur unitaire max"/>
 
-    <ListView Grid.Row="1" x:Name="LV" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-      <ListView.Background>
-        <ImageBrush ImageSource="/damier.bmp" TileMode="Tile" ViewportUnits="Absolute" Viewport="0,0,32,32"/>
-        <!--<SolidColorBrush Color="Gray"  />-->
-      </ListView.Background>
+                <XceedToolkit:IntegerUpDown Grid.Row="0" Grid.Column="1" Value="{Binding nbrButtons}" Width="50" Minimum="2" />
+                <XceedToolkit:IntegerUpDown Grid.Row="2" Grid.Column="1" Value="{Binding valUnitaireMax}" Width="50" Minimum="2"/>
 
-      <ListView.ItemsPanel>
-        <ItemsPanelTemplate>
-          <WrapPanel />
-        </ItemsPanelTemplate>
-      </ListView.ItemsPanel>
-      <Rectangle Margin="5" Width="100" Height="100" Fill="Beige" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="PowderBlue" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FF9ACD32" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFF6347" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FF6495ED" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFFA500" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFFD700" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFF4500" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FF316915" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FF8E32A7" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FFECBADC" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FFE6D84F" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="Beige" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="PowderBlue" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FF9ACD32" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFF6347" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FF6495ED" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFFA500" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFFD700" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFF4500" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FF316915" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FF8E32A7" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FFECBADC" />
-      <Rectangle Margin="5" Width="100" Height="100" Fill="#FFE6D84F" />
-    </ListView>
+                <!--PIXELS-->
+
+                <Label Grid.Row="0" Grid.Column="3" Content="Diamètre (pixels)"/>
+                <Label Grid.Row="2" Grid.Column="3" Content="Epaisseur (pixels)"/>
 
 
+                <XceedToolkit:IntegerUpDown Grid.Row="0" Grid.Column="4" Value="{Binding diametre}"  Width="50" Minimum="16"/>
+                <XceedToolkit:IntegerUpDown Grid.Row="2" Grid.Column="4" Value="{Binding epaisseur}"  Width="50" Minimum="0"/>
 
-  </Grid>
+
+                <!--COULEURS-->
+
+                <Label Grid.Row="0" Grid.Column="6" Content="Couleur"/>
+                <Label Grid.Row="2" Grid.Column="6" Content="Couleur"/>
+
+                <XceedToolkit:ColorPicker Grid.Row="0" Grid.Column="7" 
+                                              SelectedColor="{Binding couleur}"
+                                              DisplayColorAndName="False" 
+                                              Width="30"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
+                                              ShowDropDownButton="False"/>
+
+                <XceedToolkit:ColorPicker Grid.Row="2" Grid.Column="7" 
+                                              SelectedColor="{Binding couleurBackground}"
+                                              DisplayColorAndName="False" 
+                                              Width="30"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
+                                              ShowDropDownButton="False"/>
+
+
+                <Label Grid.Row="0" Grid.Column="9" Content="angleDegres_OrigineParRapportAX"/>
+
+                <XceedToolkit:IntegerUpDown Grid.Row="0" Grid.Column="10" Value="{Binding angleDegres_OrigineParRapportAX}" Width="50" Minimum="-179" Maximum="180" />
+
+            </Grid>
+
+            <Button Grid.Column="1" Content="Compute" Click="Compute" Margin="5" Padding="5"/>
+
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <ListView Grid.Column="0" x:Name="lv" />
+
+            <ListView Grid.Column="1" x:Name="LV" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListView.Background>
+                    <ImageBrush ImageSource="/damier.bmp" TileMode="Tile" ViewportUnits="Absolute" Viewport="0,0,32,32"/>
+                    <!--<SolidColorBrush Color="Gray"  />-->
+                </ListView.Background>
+
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <Rectangle Margin="5" Width="100" Height="100" Fill="Beige" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="PowderBlue" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FF9ACD32" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFF6347" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FF6495ED" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFFA500" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFFD700" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFF4500" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FF316915" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FF8E32A7" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FFECBADC" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FFE6D84F" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="Beige" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="PowderBlue" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FF9ACD32" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFF6347" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FF6495ED" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFFA500" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFFD700" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FFFF4500" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FF316915" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FF8E32A7" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FFECBADC" />
+                <Rectangle Margin="5" Width="100" Height="100" Fill="#FFE6D84F" />
+            </ListView>
+
+
+
+        </Grid>
+    </Grid>
 </Window>

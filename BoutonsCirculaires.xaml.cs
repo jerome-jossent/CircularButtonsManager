@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -19,22 +20,121 @@ using Emgu.CV.Structure;
 
 namespace EMGU.CV
 {
-    public partial class BoutonsCirculaires : Window
+    public partial class BoutonsCirculaires : Window, INotifyPropertyChanged
     {
-        MCvScalar blanc = new MCvScalar(255, 255, 255, 255);
-        MCvScalar gris = new MCvScalar(128, 128, 128, 255);
-        MCvScalar noir = new MCvScalar(0, 0, 0, 255);
+        #region Membres Binding
+        protected void OnPropertyChanged(string name)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+            }
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        MCvScalar rouge = new MCvScalar(0, 0, 255, 255);
-        MCvScalar vert = new MCvScalar(0, 200, 0, 255);
-        MCvScalar bleu = new MCvScalar(255, 0, 0, 255);
-        MCvScalar orange = new MCvScalar(0, 128, 255, 255);
+        public int nbrButtons
+        {
+            get { return _nbrButtons; }
+            set
+            {
+                if (_nbrButtons != value)
+                {
+                    _nbrButtons = value;
+                    OnPropertyChanged("nbrButtons");
+                }
+            }
+        }
+        int _nbrButtons = 15;
 
-        MCvScalar transparent = new MCvScalar(0, 0, 0, 0);
+        public int valUnitaireMax
+        {
+            get { return _valUnitaireMax; }
+            set
+            {
+                if (_valUnitaireMax != value)
+                {
+                    _valUnitaireMax = value;
+                    OnPropertyChanged("valUnitaireMax");
+                }
+            }
+        }
+        int _valUnitaireMax = 12;
+
+        public int diametre
+        {
+            get { return _diametre; }
+            set
+            {
+                if (_diametre != value)
+                {
+                    _diametre = value;
+                    OnPropertyChanged("diametre");
+                }
+            }
+        }
+        int _diametre = 128;
+
+        public int epaisseur
+        {
+            get { return _epaisseur; }
+            set
+            {
+                if (_epaisseur != value)
+                {
+                    _epaisseur = value;
+                    OnPropertyChanged("epaisseur");
+                }
+            }
+        }
+        int _epaisseur = 2;
+
+        public Color couleur
+        {
+            get { return _couleur; }
+            set
+            {
+                if (_couleur != value)
+                {
+                    _couleur = value;
+                    OnPropertyChanged("couleur");
+                }
+            }
+        }
+        Color _couleur = Colors.Blue;
+
+        public Color couleurBackground
+        {
+            get { return _couleurBackground; }
+            set
+            {
+                if (_couleurBackground != value)
+                {
+                    _couleurBackground = value;
+                    OnPropertyChanged("couleurBackground");
+                }
+            }
+        }
+        Color _couleurBackground = Colors.Transparent;
+
+        public double angleDegres_OrigineParRapportAX
+        {
+            get { return _angleDegres_OrigineParRapportAX; }
+            set
+            {
+                if (_angleDegres_OrigineParRapportAX != value)
+                {
+                    _angleDegres_OrigineParRapportAX = value;
+                    OnPropertyChanged("angleDegres_OrigineParRapportAX");
+                }
+            }
+        }
+        double _angleDegres_OrigineParRapportAX = 90;
+        #endregion
 
         public BoutonsCirculaires()
         {
             InitializeComponent();
+            DataContext = this;
             LV.Items.Clear();
         }
 
@@ -48,13 +148,31 @@ namespace EMGU.CV
 
         void Compute()
         {
-            //System.Threading.Thread.Sleep(200);
-            Dictionary<int, List<List<int>>> operations = OperationsGenerator(6, 40, 12);
+            Dictionary<int, List<List<int>>> operations = OperationsGenerator(nbrButtons, nbrButtons, valUnitaireMax);
 
-            int diametre = 128;
-            int epaisseur = 3 * diametre / 256;
-            List<MCvScalar> couleurs = new List<MCvScalar>() { rouge, vert, bleu, orange };
-            Compute(operations, diametre, epaisseur, transparent, couleurs);
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                new Action(() =>
+                {
+                    lv.Items.Clear();
+                    foreach (List<List<int>> item in operations.Values)
+                    {
+                        foreach (List<int> entiers in item)
+                        {
+                            lv.Items.Add(string.Join(" + ", entiers));
+                        }
+                    }
+                }));
+
+
+
+
+
+            List<MCvScalar> couleurs = new List<MCvScalar>() { new MCvScalar(couleur.B, couleur.G, couleur.R, couleur.A) };
+            Compute(operations, 
+                    diametre, 
+                    epaisseur, 
+                    new MCvScalar(couleurBackground.B, couleurBackground.G, couleurBackground.R, couleurBackground.A), 
+                    couleurs);
         }
 
         void Compute(Dictionary<int, List<List<int>>> operations,
@@ -92,7 +210,7 @@ namespace EMGU.CV
                        couleur,
                        couleurFond,
                        entiers,
-                       90
+                       angleDegres_OrigineParRapportAX
                        );
 
                     //ajout de l'image dans l'interface
@@ -127,7 +245,7 @@ namespace EMGU.CV
                                 if (k > 0) clef += $"{k},";
                                 if (l > 0) clef += $"{l}";
 
-                                if (i + j + k + l > sommeMin && i + j + k + l < sommeMax)
+                                if (i + j + k + l >= sommeMin && i + j + k + l <= sommeMax)
                                     if (!val.ContainsKey(clef))
                                     {
                                         if (i > 0) val.Add(clef, new List<int>() { i, j, k, l });
@@ -153,22 +271,13 @@ namespace EMGU.CV
             return operations;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="D_ext">taille fixe du disque extèrieur</param>
-        /// <param name="separation_epaisseur"></param>
-        /// <param name="couleur"></param>
-        /// <param name="couleur_arriereplan"></param>
-        /// <param name="nbrBoutonsParAnneau"></param>
-        /// <param name="titre"></param>
-        Emgu.CV.Image<Rgba, byte> DrawRings(int D_ext, int separation_epaisseur, MCvScalar couleur, MCvScalar couleur_arriereplan,
+        Image<Rgba, byte> DrawRings(int D_ext, int separation_epaisseur, MCvScalar couleur, MCvScalar couleur_arriereplan,
             List<int> nbrBoutonsParAnneau, double angleDegres_OrigineParRapportAX)
         {
             int nbrAnneaux = nbrBoutonsParAnneau.Count;
 
             //création de l'image
-            Emgu.CV.Image<Rgba, byte> iMAGE = new Image<Rgba, byte>(D_ext, D_ext);
+            Image<Rgba, byte> iMAGE = new Image<Rgba, byte>(D_ext, D_ext);
             int rows = iMAGE.Rows;
             int cols = iMAGE.Cols;
 
@@ -260,9 +369,8 @@ namespace EMGU.CV
             return iMAGE;
         }
 
-        void DrawSeparator(Emgu.CV.Image<Rgba, byte> masque, int nombre_de_part, double angle_OrigineParRapportAX,
-                        int rayon_int, int rayon_ext,
-                        int RX, int RY, Emgu.CV.Structure.MCvScalar T, int epaisseur_trait)
+        void DrawSeparator(Image<Rgba, byte> masque, int nombre_de_part, double angle_OrigineParRapportAX,
+                        int rayon_int, int rayon_ext, int RX, int RY, MCvScalar T, int epaisseur_trait)
         {
             double angle = 360 / nombre_de_part;
 
