@@ -241,19 +241,6 @@ namespace EMGU.CV
                     CvInvoke.Threshold(gray, binaire, 100, 255, ThresholdType.Binary); //Binary
                     CvInvoke.BitwiseNot(binaire, binaire); //Logical NOT
 
-
-                    //Emgu.CV.Image<Gray, byte> gray = Emgu.CV.CvInvoke. cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                    //gray = cv2.medianBlur(gray, 9)
-                    //edges = cv2.Canny(gray, 10, 25)
-                    //_, contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-                    //for c in contours:
-                    //    rect = cv2.minAreaRect(c)
-                    //    box = cv2.boxPoints(rect)
-                    //    area = cv2.contourArea(box)
-                    //    ratio = area / size
-                    //    if ratio < 0.015:
-                    //        continue
-
                     //Mat bords = new Mat();
                     //CvInvoke.Canny(binaire, bords, 10, 25);
                     Emgu.CV.Util.VectorOfVectorOfPoint contours = new Emgu.CV.Util.VectorOfVectorOfPoint();
@@ -262,25 +249,26 @@ namespace EMGU.CV
                     CvInvoke.FindContours(binaire, contours, hierarchy, RetrType.External, ChainApproxMethod.ChainApproxSimple);
                     //CvInvoke.DrawContours(image.Mat, contours, -1, new MCvScalar(0, 255, 0));
 
-                    Dictionary<int, double> dict = new Dictionary<int, double>();
-                    for (int i = 0; i < contours.Size; i++)
-                    {
-                        double aera = CvInvoke.ContourArea(contours[i]);
-                        System.Drawing.Rectangle rect = CvInvoke.BoundingRectangle(contours[i]);
+                    //colorie tout (-1) l'intérieur en vert (0,255,0,255) du contour n°1
+                    CvInvoke.DrawContours(image.Mat, contours, 1, new MCvScalar(0, 255, 0, 255), -1);
 
-                        dict.Add(i, aera);
+                    #region BoundingBox
+                    //Dictionary<int, double> dict = new Dictionary<int, double>();
+                    //for (int i = 0; i < contours.Size; i++)
+                    //{
+                    //    double aera = CvInvoke.ContourArea(contours[i]);
+                    //    System.Drawing.Rectangle rect = CvInvoke.BoundingRectangle(contours[i]);
 
-                    }
-                    //var item = dict.OrderBy(v => v.Value).Take(5);
-                    foreach (var it in dict)//item)
-                    {
-                        int key = int.Parse(it.Key.ToString());
-                        System.Drawing.Rectangle rect = CvInvoke.BoundingRectangle(contours[key]);
-                        CvInvoke.Rectangle(image.Mat, rect, new MCvScalar(0, 0, 255), 1);
-                    }
+                    //    dict.Add(i, aera);
+                    //}
 
-
-
+                    //foreach (var it in dict)//item)
+                    //{
+                    //    int key = int.Parse(it.Key.ToString());
+                    //    System.Drawing.Rectangle rect = CvInvoke.BoundingRectangle(contours[key]);
+                    //    CvInvoke.Rectangle(image.Mat, rect, new MCvScalar(0, 0, 255), 1);
+                    //}
+                    #endregion
 
                     //ajout de l'image dans l'interface
                     Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
@@ -326,8 +314,6 @@ namespace EMGU.CV
                     new MCvScalar(couleurBackground.B, couleurBackground.G, couleurBackground.R, couleurBackground.A),
                     couleurs);
         }
-
-
         #endregion
 
         #region COMPUTE (MICRO)
