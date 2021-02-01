@@ -150,11 +150,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="damier.bmp" />
+    <Resource Include="Images\damier.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="ButtonClose.png" />
-    <Resource Include="ButtonPlay.png" />
+    <Resource Include="Images\ButtonClose.png" />
+    <Resource Include="Images\ButtonPlay.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\carte-au-tresors.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

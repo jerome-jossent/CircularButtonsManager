@@ -14,7 +14,7 @@
         <Image Grid.Row="0" Name="wpfImage" />
         <Label Grid.Row="1" Name="lbl" HorizontalContentAlignment="Center" />
 
-        <Image x:Name="icone_del" Source="ButtonClose.png" Width="40" Height="40" Margin="0,0,10,10"
+        <Image x:Name="icone_del" Source="Images/ButtonClose.png" Width="40" Height="40" Margin="0,0,10,10"
                HorizontalAlignment="Right" VerticalAlignment="Bottom" Visibility="Hidden" 
                RenderOptions.BitmapScalingMode="Fant" MouseUp="Image_MouseUp"/>
 

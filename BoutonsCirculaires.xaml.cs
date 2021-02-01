@@ -40,11 +40,13 @@ namespace EMGU.CV
                 if (_nbrButtons != value)
                 {
                     _nbrButtons = value;
+                    Properties.Settings.Default._nbrButtons = _nbrButtons;
+                    Properties.Settings.Default.Save();
                     OnPropertyChanged("nbrButtons");
                 }
             }
         }
-        int _nbrButtons = 15;
+        int _nbrButtons = Properties.Settings.Default._nbrButtons;
 
         public int valUnitaireMax
         {
@@ -54,11 +56,13 @@ namespace EMGU.CV
                 if (_valUnitaireMax != value)
                 {
                     _valUnitaireMax = value;
+                    Properties.Settings.Default._valUnitaireMax = _valUnitaireMax;
+                    Properties.Settings.Default.Save();
                     OnPropertyChanged("valUnitaireMax");
                 }
             }
         }
-        int _valUnitaireMax = 12;
+        int _valUnitaireMax = Properties.Settings.Default._valUnitaireMax;
 
         public int diametre
         {
@@ -68,11 +72,13 @@ namespace EMGU.CV
                 if (_diametre != value)
                 {
                     _diametre = value;
+                    Properties.Settings.Default._diametre = _diametre;
+                    Properties.Settings.Default.Save();
                     OnPropertyChanged("diametre");
                 }
             }
         }
-        int _diametre = 128;
+        int _diametre = Properties.Settings.Default._diametre;
 
         public int epaisseur
         {
@@ -82,39 +88,55 @@ namespace EMGU.CV
                 if (_epaisseur != value)
                 {
                     _epaisseur = value;
+                    Properties.Settings.Default._epaisseur = _epaisseur;
+                    Properties.Settings.Default.Save();
                     OnPropertyChanged("epaisseur");
                 }
             }
         }
-        int _epaisseur = 2;
+        int _epaisseur = Properties.Settings.Default._epaisseur;
 
         public Color couleur
         {
-            get { return _couleur; }
+            get
+            {
+                byte[] bytes = BitConverter.GetBytes(_couleur);
+                return Color.FromArgb(bytes[3], bytes[2], bytes[1], bytes[0]);
+            }
             set
             {
-                if (_couleur != value)
+                int val = BitConverter.ToInt32(new byte[] { value.B, value.G, value.R, value.A }, 0);
+                if (_couleur != val)
                 {
-                    _couleur = value;
+                    _couleur = val;
+                    Properties.Settings.Default._couleur = _couleur;
+                    Properties.Settings.Default.Save();
                     OnPropertyChanged("couleur");
                 }
             }
         }
-        Color _couleur = Colors.Blue;
+        int _couleur = Properties.Settings.Default._couleur;
 
         public Color couleurBackground
         {
-            get { return _couleurBackground; }
+            get
+            {
+                byte[] bytes = BitConverter.GetBytes(_couleurBackground);
+                return Color.FromArgb(bytes[3], bytes[2], bytes[1], bytes[0]);
+            }
             set
             {
-                if (_couleurBackground != value)
+                int val = BitConverter.ToInt32(new byte[] { value.B, value.G, value.R, value.A }, 0);
+                if (_couleur != val)
                 {
-                    _couleurBackground = value;
+                    _couleurBackground = val;
+                    Properties.Settings.Default._couleurBackground = _couleurBackground;
+                    Properties.Settings.Default.Save();
                     OnPropertyChanged("couleurBackground");
                 }
             }
         }
-        Color _couleurBackground = Colors.Transparent;
+        int _couleurBackground = Properties.Settings.Default._couleurBackground;
 
         public double angleDegres_OrigineParRapportAX
         {
@@ -124,11 +146,13 @@ namespace EMGU.CV
                 if (_angleDegres_OrigineParRapportAX != value)
                 {
                     _angleDegres_OrigineParRapportAX = value;
+                    Properties.Settings.Default._angleDegres_OrigineParRapportAX = _angleDegres_OrigineParRapportAX;
+                    Properties.Settings.Default.Save();
                     OnPropertyChanged("angleDegres_OrigineParRapportAX");
                 }
             }
         }
-        double _angleDegres_OrigineParRapportAX = 90;
+        double _angleDegres_OrigineParRapportAX = Properties.Settings.Default._angleDegres_OrigineParRapportAX;
         #endregion
 
         Dictionary<string, Proposition> propositions;
@@ -272,6 +296,40 @@ namespace EMGU.CV
         }
         #endregion
 
+        #region DEBUG (MACRO)
+        void DEBUG(object sender, MouseButtonEventArgs e)
+        {
+            LV.Items.Clear();
+            System.Threading.Thread thread = new System.Threading.Thread(Debug);
+            thread.Start();
+        }
+        void Debug()
+        {
+            propositions = new Dictionary<string, Proposition>();
+
+            Dictionary<int, List<List<int>>> operations = OperationsGenerator(nbrButtons, nbrButtons, valUnitaireMax);
+
+            operations.Clear();
+            operations.Add(13, new List<List<int>>() { new List<int>() { 2, 4, 7 } });
+
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                new Action(() =>
+                {
+                    lv.Items.Clear();
+                    foreach (List<List<int>> item in operations.Values)
+                        foreach (List<int> entiers in item)
+                            lv.Items.Add(Proposition.SetSignature(entiers));
+                }));
+
+            List<MCvScalar> couleurs = new List<MCvScalar>() { new MCvScalar(couleur.B, couleur.G, couleur.R, couleur.A) };
+            Compute(operations, diametre, epaisseur,
+                    new MCvScalar(couleurBackground.B, couleurBackground.G, couleurBackground.R, couleurBackground.A),
+                    couleurs);
+        }
+
+
+        #endregion
+
         #region COMPUTE (MICRO)
         Dictionary<int, List<List<int>>> OperationsGenerator(int sommeMin, int sommeMax, int valUnitaireMax)
         {
@@ -290,13 +348,28 @@ namespace EMGU.CV
                                 if (l > 0) clef += $"{l}";
 
                                 if (i + j + k + l >= sommeMin && i + j + k + l <= sommeMax)
+                                {
+                                    List<int> entiers = new List<int>();
+
+                                    if (i > 0) entiers = new List<int>() { i, j, k, l };
+                                    else if (j > 0) entiers = new List<int>() { j, k, l };
+                                    else if (k > 0) entiers = new List<int>() { k, l };
+                                    else if (l > 0) entiers = new List<int>() { l };
+
                                     if (!val.ContainsKey(clef))
                                     {
-                                        if (i > 0) val.Add(clef, new List<int>() { i, j, k, l });
-                                        else if (j > 0) val.Add(clef, new List<int>() { j, k, l });
-                                        else if (k > 0) val.Add(clef, new List<int>() { k, l });
-                                        else if (l > 0) val.Add(clef, new List<int>() { l });
+                                        // 1 seul fois 1
+                                        int nbr1 = 0;
+                                        for (int ent = 0; ent < entiers.Count; ent++)
+                                        {
+                                            if (entiers[ent] == 1)
+                                                nbr1++;
+                                        }
+
+                                        if (nbr1 < 2)
+                                            val.Add(clef, entiers);
                                     }
+                                }
                             }
 
             //rangement par somme
@@ -539,7 +612,6 @@ namespace EMGU.CV
             }
         }
 
-
         #region CODES EN VRAC
         void SETPixelByCode(int D_ext)
         {
@@ -629,5 +701,6 @@ namespace EMGU.CV
             #endregion
         }
         #endregion
+
     }
 }
