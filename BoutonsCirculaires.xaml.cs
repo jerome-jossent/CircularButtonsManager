@@ -501,7 +501,12 @@ namespace EMGU.CV
 
         void lv_sel_change(object sender, SelectionChangedEventArgs e)
         {
-            LV.SelectedItem = propositions[lv.SelectedItem.ToString()].pUC;
+            if (lv.SelectedItem != null)
+            {
+                string clef = lv.SelectedItem.ToString();
+                if (propositions.ContainsKey(clef))
+                    LV.SelectedItem = propositions[lv.SelectedItem.ToString()].pUC;
+            }
         }
 
         internal void del(Proposition proposition)
