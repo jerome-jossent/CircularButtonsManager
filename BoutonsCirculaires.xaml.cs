@@ -241,16 +241,112 @@ namespace EMGU.CV
                     CvInvoke.Threshold(gray, binaire, 100, 255, ThresholdType.Binary); //Binary
                     CvInvoke.BitwiseNot(binaire, binaire); //Logical NOT
 
-                    //Mat bords = new Mat();
-                    //CvInvoke.Canny(binaire, bords, 10, 25);
                     Emgu.CV.Util.VectorOfVectorOfPoint contours = new Emgu.CV.Util.VectorOfVectorOfPoint();
                     Mat hierarchy = new Mat();
 
                     CvInvoke.FindContours(binaire, contours, hierarchy, RetrType.External, ChainApproxMethod.ChainApproxSimple);
                     //CvInvoke.DrawContours(image.Mat, contours, -1, new MCvScalar(0, 255, 0));
 
-                    //colorie tout (-1) l'intérieur en vert (0,255,0,255) du contour n°1
-                    CvInvoke.DrawContours(image.Mat, contours, 1, new MCvScalar(0, 255, 0, 255), -1);
+                    //WHITE to Alpha
+                    SETColorPixelToAlphaPixel(image, new MCvScalar(255, 255, 255, 255));
+
+                    for (int i = 0; i < contours.Size; i++)
+                    {
+                        Mat btn = new Mat(image.Size, DepthType.Cv8U, 1);
+                        //colorie tout (-1) l'intérieur en vert (0,255,0,255) du contour n°1
+                        CvInvoke.DrawContours(btn, contours, i, new MCvScalar(100), -1);
+
+
+
+                        //CHANGER : au lieu du centre de masse, prendre l'axe "parfait" = axe entre 2 séparations
+                        //pourquoi pas commencer par le point sur cet axe le plus prêt du barycentre
+                        //puis se balader sur l'axe
+
+
+
+
+
+
+
+
+
+
+                        //barycentre (centre de masse)
+                        MCvMoments mom = CvInvoke.Moments(contours[i]);
+                        System.Drawing.Point center_of_mass = new System.Drawing.Point((int)((float)mom.M10 / mom.M00), (int)((float)mom.M01 / mom.M00));
+                        CvInvoke.Circle(image.Mat, center_of_mass, 2, new MCvScalar(0, 255, 0, 255), -1);
+
+                        int cote_px = 10;
+
+                        List<int> icon_cote_px_test = new List<int>();
+                        System.Drawing.Size icon_size;
+                        System.Drawing.Rectangle rect = new System.Drawing.Rectangle();
+                        System.Drawing.Point icon_center;
+                        //int cote_px_retenu = 100;
+                        while (!icon_cote_px_test.Contains(cote_px))
+                        {
+                            icon_cote_px_test.Add(cote_px);
+
+                            icon_size = new System.Drawing.Size(cote_px, cote_px);
+                            icon_center = new System.Drawing.Point(center_of_mass.X - cote_px / 2, center_of_mass.Y - cote_px / 2);
+                            rect = new System.Drawing.Rectangle(icon_center, icon_size);
+
+                            int area_theo = cote_px * cote_px;
+                            Mat ROI = new Mat(btn, rect);
+                            int area_real = CvInvoke.CountNonZero(ROI);
+                            int pixelvide = area_theo - area_real;
+                            Console.WriteLine(cote_px + " ==> " + pixelvide);
+                            if (pixelvide > 0)
+                                cote_px--;
+                            if (pixelvide <= 0)
+                                cote_px++;
+                        }
+
+                        cote_px = icon_cote_px_test[icon_cote_px_test.Count - 2];
+                        icon_size = new System.Drawing.Size(cote_px, cote_px);
+                        icon_center = new System.Drawing.Point(center_of_mass.X - cote_px / 2, center_of_mass.Y - cote_px / 2);
+                        rect = new System.Drawing.Rectangle(icon_center, icon_size);
+
+                        CvInvoke.Rectangle(image.Mat,
+                            rect,
+                            new MCvScalar(0, 0, 0, 255));
+
+
+
+                        //int nbr = 100000;
+                        //while (nbr > 50)
+                        //{
+                        //    CvInvoke.Erode(btn_prec, btn, element, new System.Drawing.Point(-1, -1), 1, BorderType.Reflect, default(MCvScalar));
+                        //    nbr = CvInvoke.CountNonZero(btn);
+                        //    if (nbr > 50)
+                        //        btn_prec = btn;
+                        //    //Console.WriteLine(nbr);
+                        //    //Mat btn_cpy = new Mat();
+                        //    //btn.CopyTo(btn_cpy);
+                        //    //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                        //    //    new Action(() =>
+                        //    //    {
+                        //    //        Proposition p = new Proposition(entiers, btn_cpy, titre, this);
+                        //    //        LV.Items.Add(p.pUC);
+                        //    //    }));
+                        //}
+                        //btn = btn_prec;
+
+                        //Emgu.CV.Util.VectorOfVectorOfPoint contourBouton = new Emgu.CV.Util.VectorOfVectorOfPoint();
+                        //Mat hierarchyBouton = new Mat();
+
+                        //CvInvoke.FindContours(btn, contourBouton, hierarchyBouton, RetrType.External, ChainApproxMethod.ChainApproxSimple);
+                        //System.Drawing.Rectangle rect = CvInvoke.BoundingRectangle(contourBouton[0]);
+
+
+                        //System.Drawing.Point centre = new System.Drawing.Point(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
+                        //CvInvoke.Circle(image.Mat, geometric_center, 2, new MCvScalar(0, 0, 255, 255), -1);
+
+
+                    }
+
+
+
 
                     #region BoundingBox
                     //Dictionary<int, double> dict = new Dictionary<int, double>();
@@ -499,6 +595,7 @@ namespace EMGU.CV
         }
         #endregion
 
+        #region IHM
         void lv_sel_change(object sender, SelectionChangedEventArgs e)
         {
             if (lv.SelectedItem != null)
@@ -514,46 +611,7 @@ namespace EMGU.CV
             LV.Items.Remove(proposition.pUC);
             lv.Items.Remove(proposition.signature);
         }
-
-        //#region AddImageToIHM
-        //Proposition_UC AddImageToIHM(Emgu.CV.Image<Rgba, byte> image, string txt = "")
-        //{
-        //    BitmapSource img = ToBitmapSource(image);
-        //    return AddImageToIHM(img, txt);
-        //}
-        //Proposition_UC AddImageToIHM(Mat mat, string txt = "")
-        //{
-        //    BitmapSource img = ToBitmapSource(mat);
-        //    return AddImageToIHM(img, txt);
-        //}
-        //Proposition_UC AddImageToIHM(BitmapSource img, string txt = "")
-        //{
-        //    Proposition_UC pUC = new Proposition_UC();
-
-        //    pUC.wpfImage = new Image();
-        //    pUC.wpfImage.Width = img.Width;
-        //    pUC.wpfImage.Source = img;
-
-        //    pUC.lbl.Content = txt;
-        //    //if (txt != "")
-        //    //{
-        //    //    Label lbl = new Label();
-        //    //    lbl.Content = txt;
-        //    //    lbl.HorizontalContentAlignment = HorizontalAlignment.Center;
-
-        //    //    StackPanel stackPanel = new StackPanel();
-        //    //    stackPanel.Orientation = System.Windows.Controls.Orientation.Vertical;
-
-        //    //    stackPanel.Children.Add(wpfImage);
-        //    //    stackPanel.Children.Add(lbl);
-        //    //    return stackPanel;
-        //    //}
-        //    //else
-        //    //    return wpfImage;
-
-        //    return pUC;
-        //}
-        //#endregion
+        #endregion
 
         #region CONVERSION
         [DllImport("gdi32")]
@@ -584,14 +642,8 @@ namespace EMGU.CV
 
         void SETAlphaPixelToColorPixel(Emgu.CV.Image<Rgba, byte> image, MCvScalar couleur)
         {
-            int rows = image.Rows;
-            int cols = image.Cols;
-            //Byte[,,] data = image.Data;
-
-            for (int y = 0; y < rows; ++y)
-            {
-                for (int x = 0; x < cols; ++x)
-                {
+            for (int y = 0; y < image.Rows; ++y)
+                for (int x = 0; x < image.Cols; ++x)
                     if (image.Data[x, y, 3] == 0)
                     {
                         image.Data[x, y, 0] = (byte)couleur.V0;
@@ -599,31 +651,23 @@ namespace EMGU.CV
                         image.Data[x, y, 2] = (byte)couleur.V2;
                         image.Data[x, y, 3] = (byte)couleur.V3;
                     }
-                }
-            }
+        }
+
+        void SETColorPixelToAlphaPixel(Emgu.CV.Image<Rgba, byte> image, MCvScalar couleur)
+        {
+            for (int y = 0; y < image.Rows; ++y)
+                for (int x = 0; x < image.Cols; ++x)
+                    if (image.Data[x, y, 0] == (byte)couleur.V0 &&
+                        image.Data[x, y, 1] == (byte)couleur.V1 &&
+                        image.Data[x, y, 2] == (byte)couleur.V2 &&
+                        image.Data[x, y, 3] == (byte)couleur.V3)
+                    {
+
+                        image.Data[x, y, 3] = 0;
+                    }
         }
 
         #region CODES EN VRAC
-        void SETPixelByCode(int D_ext)
-        {
-            Emgu.CV.Image<Rgba, byte> image = new Image<Rgba, byte>(D_ext, D_ext);
-
-            int rows = image.Rows;
-            int cols = image.Cols;
-            Byte[,,] data = image.Data;
-
-            for (int y = 0; y < rows; ++y)
-            {
-                for (int x = 0; x < cols; ++x)
-                {
-                    data[x, y, 0] = 255;
-                    data[x, y, 1] = 255;
-                    data[x, y, 2] = 255;
-                    data[x, y, 3] = 255;
-                }
-            }
-        }
-
         void Draw()
         {
             #region PREMIER JET
@@ -690,8 +734,44 @@ namespace EMGU.CV
             //AddImageToIHM(image, "image");
             //AddImageToIHM(masque, "masque");
             #endregion
+
+            #region Erode
+            ////Isole le bouton 1 et cherche le point le plus éloigné des bords
+            //var element = CvInvoke.GetStructuringElement(ElementShape.Cross, new System.Drawing.Size(3, 3), new System.Drawing.Point(-1, -1));
+
+            //Mat btn_prec = new Mat();
+            //btn.CopyTo(btn_prec);
+
+            //int nbr = 100000;
+            //while (nbr > 50)
+            //{
+            //    CvInvoke.Erode(btn_prec, btn, element, new System.Drawing.Point(-1, -1), 1, BorderType.Reflect, default(MCvScalar));
+            //    nbr = CvInvoke.CountNonZero(btn);
+            //    if (nbr > 50)
+            //        btn_prec = btn;
+            //    //Console.WriteLine(nbr);
+            //    //Mat btn_cpy = new Mat();
+            //    //btn.CopyTo(btn_cpy);
+            //    //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+            //    //    new Action(() =>
+            //    //    {
+            //    //        Proposition p = new Proposition(entiers, btn_cpy, titre, this);
+            //    //        LV.Items.Add(p.pUC);
+            //    //    }));
+            //}
+            //btn = btn_prec;
+
+            //Emgu.CV.Util.VectorOfVectorOfPoint contourBouton = new Emgu.CV.Util.VectorOfVectorOfPoint();
+            //Mat hierarchyBouton = new Mat();
+
+            //CvInvoke.FindContours(btn, contourBouton, hierarchyBouton, RetrType.External, ChainApproxMethod.ChainApproxSimple);
+            //System.Drawing.Rectangle rect = CvInvoke.BoundingRectangle(contourBouton[0]);
+
+
+            //System.Drawing.Point centre = new System.Drawing.Point(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
+            //CvInvoke.Circle(image.Mat, geometric_center, 2, new MCvScalar(0, 0, 255, 255), -1);
+            #endregion
         }
         #endregion
-
     }
 }
