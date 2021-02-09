@@ -253,9 +253,6 @@ namespace EMGU.CV
                     //WHITE to Alpha
                     SETColorPixelToAlphaPixel(image, new MCvScalar(255, 255, 255, 255));
 
-
-
-
                     for (int b = 0; b < boutons.Count; b++)
                     {
                         Bouton bouton = boutons[b];
@@ -263,26 +260,19 @@ namespace EMGU.CV
                         CvInvoke.Circle(image.Mat, bouton.barycentre, 2, new MCvScalar(0, 255, 0, 255), -1);
 
                         //Quel contour est concerné ?
-                        int quel_c = 0;
-                        for (int c = 0; c < contours.Size; c++)
+                        int contour_index = 0;
+                        for (contour_index = 0; contour_index < contours.Size; contour_index++)
                         {
-                            quel_c = c;
-                            double result = CvInvoke.PointPolygonTest(contours[c], bouton.barycentre, false);
-
-                            if (result > 0) // ==> inside
+                            double result = CvInvoke.PointPolygonTest(contours[contour_index], bouton.barycentre, false);
+                            if (result > 0) // >0 : inside
                             {
-
                                 break;
                             }
                         }
 
-
                         Mat btn = new Mat(image.Size, DepthType.Cv8U, 1);
                         //colorie tout (-1) l'intérieur en vert (0,255,0,255) du contour n°1
-                        CvInvoke.DrawContours(btn, contours, quel_c, new MCvScalar(100), -1);
-
-
-
+                        CvInvoke.DrawContours(btn, contours, contour_index, new MCvScalar(100), -1);
 
                         //optimisation sur 2 paramètres :
                         //- p position sur l'axe centre du cercle, barycentre (position comprise entre rayon max et rayon min)
@@ -292,8 +282,8 @@ namespace EMGU.CV
                         // first values
                         // p0 = barycentre (parfait ou trop prêt du centre)
                         // t0 = 1
-                        //test : est ce qu'aucun pixels du carrée n'est vide (on a une image vide avec "seulement" le bouton de dessiné)
-                        //==> on augmente t
+                        // test : est ce qu'aucun pixels du carrée n'est vide (on a une image vide avec "seulement" le bouton de dessiné)
+                        // ==> on augmente t
                         // quand tmax atteint pour p donné, on change de p, avec p compris entre p0 et p sur axe avec D = rayon_ext - t
 
                         // puis dichtomie pour p en maximisant t à chaque essai.
