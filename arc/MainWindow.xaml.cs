@@ -59,7 +59,8 @@ namespace arc
                 if (value > _intvalue)
                 {
                     //add
-                    for (int i = sliders.Count; i < value + 1; i++)
+                    int val_init = sliders.Count;
+                    for (int i = val_init; i < value; i++)
                     {
                         Standard_UC_JJO.Slider_INT_JJO slider = new Standard_UC_JJO.Slider_INT_JJO();
                         slider._label_title = $"Anneau {i} : nombre de boutons";
@@ -76,7 +77,9 @@ namespace arc
                     while (sliders.Count > value)
                     {
                         int clef = sliders.Last().Key;
-                        sliders[clef]._ValueChanged -= Rings_ButtonsNumberChanged;
+                        Standard_UC_JJO.Slider_INT_JJO slider = sliders[clef];
+                        slider._ValueChanged -= Rings_ButtonsNumberChanged;
+                        sp_rings_sliders.Children.Remove(slider);
                         sliders.Remove(clef);
                     }
                 }
