@@ -12,7 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Linq;
 
 namespace arc
 {
@@ -42,6 +41,7 @@ namespace arc
 
         Dictionary<string, bouton> dico;
         Dictionary<int, Standard_UC_JJO.Slider_INT_JJO> sliders;
+        RingButtons ABC;
 
         public int intvalue
         {
@@ -90,7 +90,7 @@ namespace arc
         }
         int _intvalue;
 
-        private void Rings_ButtonsNumberChanged(object sender, EventArgs e)
+        void Rings_ButtonsNumberChanged(object sender, EventArgs e)
         {
             Slider s = (Slider)sender;
             Grid g = (Grid)(s.Parent);
@@ -102,10 +102,12 @@ namespace arc
         {
             DataContext = this;
             InitializeComponent();
+            GO();
+        }
 
-            //Dictionary<int, List<List<int>>> operations = Operation.OperationsGenerator(10, 20, 2);
-            int mode = 1;
-
+        void GO()
+        {
+            int mode = 2;
             switch (mode)
             {
                 case 1:
@@ -122,16 +124,181 @@ namespace arc
                                                             "ABC,D,A","ABC,D,B","ABC,D,C","ABC,D,D"
                                                         };
 
-                    RingButtons ABC = new RingButtons(abc);
+
+                    //List<string> abc = new List<string>() {
+                    //                                        "ABC",
+                    //                                        "ABC,A", "ABC,B", "ABC,C", "ABC,D",
+                    //                                        "ABC,A,A","ABC,A,B"                                                            
+                    //                                    };
+
+                    //List<string> abc_light = new List<string>() {
+                    //                                        "ABC,B",
+                    //                                        "ABC,A,B",
+                    //                                        "ABC,A,A,A","ABC,A,A,B",
+                    //                                        "ABC,C,A","ABC,C,B","ABC,C,C",
+                    //                                        "ABC,D,A","ABC,D,B","ABC,D,C","ABC,D,D"
+                    //                                    };
+
+                    ABC = new RingButtons(abc, new string[1] { "," });
                     CreateRingButtons(ABC);
 
+                    break;
+                case 3:
+                    //Dictionary<int, List<List<int>>> operations = Operation.OperationsGenerator(10, 20, 2);
                     break;
             }
         }
 
         void CreateRingButtons(RingButtons rb)
         {
+            rb.boutons = new Dictionary<string, Button>();
 
+            dico = new Dictionary<string, bouton>();
+            Canvas c = new Canvas();
+            foreach (Ring anneau in rb.anneaux.Values)
+                c.Children.Add(DrawSecteurs(anneau));
+
+            grd.Children.Clear();
+            grd.Children.Add(c);
+        }
+
+        Viewbox DrawSecteurs(Ring anneau)
+        {
+            Point c = new Point(anneau.rayon_externe, anneau.rayon_externe);
+            Grid g = new Grid();
+            g.Width = anneau.rayon_externe * 2;
+            g.Height = anneau.rayon_externe * 2;
+
+            int i = 0;
+            foreach (Element element in anneau.elements)
+            {
+                Path p = DrawSecteur(element);
+                p.Name = "ring_" + anneau.index + "_btn_" + i;
+
+                int j = i;
+                while (j >= colors.Count)
+                    j -= colors.Count;
+                Brush couleur = colors[j];
+                p.Fill = couleur;
+
+                //initialisation bouton
+                element.button = new Button() { ring = element.anneau };
+                element.button.couleur = couleur;
+                Color color = ((SolidColorBrush)couleur).Color;
+                float fctr = 0.8f;
+                byte offest = 50;
+                element.button.couleurfonce = new SolidColorBrush(Color.FromRgb(ChangeIntensity(color.R, fctr, offest),
+                                                                    ChangeIntensity(color.G, fctr, offest),
+                                                                    ChangeIntensity(color.B, fctr, offest)));
+                element.button.btn_index = i;
+                element.button.name = p.Name;
+                ABC.boutons.Add(element.button.name, element.button);
+                g.Children.Add(p);
+                i++;
+            }
+
+            Viewbox v = new Viewbox();
+            v.StretchDirection = StretchDirection.Both;
+            v.Stretch = Stretch.UniformToFill;
+            v.Width = anneau.rayon_externe;
+            v.Height = anneau.rayon_externe;
+            v.Child = g;
+            //v.Margin = new Thickness((r_extMAX - r_ext) / 2);
+            return v;
+        }
+
+        //text inside :
+        //https://social.msdn.microsoft.com/Forums/vstudio/en-US/27c9eb93-8a32-40d8-b0dd-b441a2496907/how-to-make-textblocks-appear-inside-an-ellipse-area?forum=wpf
+
+        Path DrawSecteur(Element element)
+        {
+            // rayons
+            float r_ext = element.anneau.rayon_externe;
+            float r_int = element.anneau.rayon_interne;
+            Point centre = element.ringButtons.centre;
+            Element eleParent = element.parent;
+
+            // angles, dépendent de :
+            // - parent : quels sont les angles du parent
+            // - combien d'enfant (dont cet élément) a ce parent ?
+            if (element.isOrigin)
+            {
+                //pas de découpage :                //je suis au centre et j'utilise toute la place 0->359,99°
+                element.angle_ouverture_deb = 0;
+                element.angle_ouverture_fin = 360;
+                //element.angle_ouverture_deg = 360;
+            }
+            else
+            {
+                eleParent.angle_ouverture_deg = eleParent.angle_ouverture_fin - eleParent.angle_ouverture_deb;
+
+                element.angle_ouverture_deg = eleParent.angle_ouverture_deg / eleParent.children.Count;
+
+                element.angle_ouverture_deb = eleParent.angle_ouverture_deb + element.angle_ouverture_deg * element.ordre;
+                element.angle_ouverture_fin = element.angle_ouverture_deb + element.angle_ouverture_deg;
+            }
+
+            //dessins====================
+            //disques
+            //Path cercle_ext = new Path();
+            //Path cercle_int = new Path();
+            //cercle_ext.Data = new EllipseGeometry(centre, r_ext, r_ext);
+            //cercle_int.Data = new EllipseGeometry(centre, r_int, r_int);
+            //CombinedGeometry anneau = new CombinedGeometry(GeometryCombineMode.Exclude, cercle_ext.Data, cercle_int.Data);
+            CombinedGeometry anneau = new CombinedGeometry(GeometryCombineMode.Exclude, 
+                                                           new EllipseGeometry(centre, r_ext, r_ext),
+                                                           new EllipseGeometry(centre, r_int, r_int));
+
+            CombinedGeometry c;
+            //cas origine : doit être le Premier cas !!
+            if (eleParent == null || eleParent.children.Count == 1)
+            {
+                //pas de découpage :                //je suis au centre et j'utilise toute la place 0->359,99°
+
+                //secteur
+                c = anneau;
+            }
+            else
+            {
+                float marge = 0;
+
+                //triangle - centré !!!!
+                float d = (float)(marge / Math.Cos(element.angle_ouverture_deg / 2 * Math.PI / 180));
+                float X = (float)(centre.X - centre.X * Math.Tan(element.angle_ouverture_deg / 2 * Math.PI / 180));
+                float X_ = (float)(centre.X + centre.X * Math.Tan(element.angle_ouverture_deg / 2 * Math.PI / 180));
+
+                if (X < -100000) X = -100000;
+                if (X_ > 100000) X_ = 100000;
+                
+                if (X > -0.01 && X < 0.01) X = 0;
+                if (X_ > -0.01 && X_ < 0.01) X_ = 0;
+                LineSegment x = new LineSegment(new Point(X, -d), true);
+                LineSegment x_ = new LineSegment(new Point(X_, -d), true);
+
+                LineSegment[] s = new LineSegment[] { x, x_ };
+                PathFigure t = new PathFigure(centre, s, true);
+                PathGeometry triangle = new PathGeometry(new PathFigure[] { t });
+
+                //secteur
+                c = new CombinedGeometry(GeometryCombineMode.Intersect, anneau, triangle);
+            }
+
+            Path p = new Path();
+            //p.RenderTransform = new RotateTransform(element.angle_ouverture_deb + element.angle_ouverture_deg / 2, centre.X, centre.Y);
+            if (element.isOrigin)
+                p.Data = anneau;
+            else
+                p.Data = c;
+
+            p.MouseDown += MD2;
+            p.MouseEnter += ME2;
+            p.MouseLeave += ML2;
+            //p.SetValue(RenderOptions.EdgeModeProperty, EdgeMode.Unspecified);
+
+            p.Stroke = Brushes.Black;
+            p.StrokeThickness = 2;
+
+            return p;
         }
 
         void CreateButtons()
@@ -150,9 +317,8 @@ namespace arc
             grd.Children.Add(c);
         }
 
-        private void CreateButtons_FromSliders()
+        void CreateButtons_FromSliders()
         {
-            grd.Children.Clear();
             dico = new Dictionary<string, bouton>();
             int marge = 0;
             float r_max = 300;
@@ -161,16 +327,12 @@ namespace arc
             float r_2 = r_max * 1 / 3;
 
             Canvas c = new Canvas();
-            //c.Children.Add(DrawSecteurs(0, r_1, r_max, r_1, 3, marge));
-            //c.Children.Add(DrawSecteurs(1, r_2 + r_1, r_max, r_2, 9, marge));
-            //c.Children.Add(DrawSecteurs(2, r_max, r_max, r_max - r_2 - r_1, 18, marge));
 
             for (int i = 0; i < sliders.Count; i++)
-            {
                 c.Children.Add(DrawSecteurs(i, r_max * (i + 1) / sliders.Count, r_max, epaisseur, (int)sliders[i]._sld.Value, marge));
-            }
-            grd.Children.Add(c);
 
+            grd.Children.Clear();
+            grd.Children.Add(c);
         }
 
         Viewbox DrawSecteurs(int ring_index, float r_ext, float r_extMAX, float epaisseur, int nbrboutons, float marge)
@@ -206,9 +368,10 @@ namespace arc
                 b.couleur = p.Fill;
                 Color color = ((SolidColorBrush)b.couleur).Color;
                 float fctr = 0.8f;
-                b.couleurfonce = new SolidColorBrush(Color.FromRgb(ChangeIntensity(color.R, fctr),
-                                                                    ChangeIntensity(color.G, fctr),
-                                                                    ChangeIntensity(color.B, fctr)));
+                byte offest = 50;
+                b.couleurfonce = new SolidColorBrush(Color.FromRgb(ChangeIntensity(color.R, fctr, offest),
+                                                                    ChangeIntensity(color.G, fctr, offest),
+                                                                    ChangeIntensity(color.B, fctr, offest)));
                 b.btn_index = i;
                 b.ring_index = ring_index;
                 b.name = p.Name;
@@ -227,13 +390,13 @@ namespace arc
             return v;
         }
 
-        byte ChangeIntensity(byte val, float factor)
+        byte ChangeIntensity(byte val, float factor, byte offset)
         {
             int v = (int)val;
             if (factor > 1)
-                v += 50;
+                v += offset;
             else if (factor < 1)
-                v -= 50;
+                v -= offset;
 
             v = (int)(v * factor);
 
@@ -254,10 +417,13 @@ namespace arc
             cercle_int.Data = new EllipseGeometry(centre, r_int, r_int);
             CombinedGeometry anneau = new CombinedGeometry(GeometryCombineMode.Exclude, cercle_ext.Data, cercle_int.Data);
 
-            //triangle
+            //triangle - centré !!!!
             float d = (float)(marge / Math.Cos(angle_ouverture_deg / 2 * Math.PI / 180));
             float X = r_ext - (float)(r_ext * Math.Tan(angle_ouverture_deg / 2 * Math.PI / 180));
             float X_ = r_ext + (float)(r_ext * Math.Tan(angle_ouverture_deg / 2 * Math.PI / 180));
+
+            if (X < -10E10) X = -100000; 
+            if (X_ > 10E10) X_ = 100000; 
 
             //Point c_ = new Point(r_ext, r_ext - d);
             //LineSegment x = new LineSegment(new Point(X, r_ext - r_extMAX - d), true);
@@ -287,26 +453,50 @@ namespace arc
             return p;
         }
 
-        private void ME(object sender, MouseEventArgs e)
+        void ME(object sender, MouseEventArgs e)
         {
             Path p = (Path)sender;
             Title = p.Name + " ENTER";
             p.Fill = dico[p.Name].couleurfonce;
         }
 
-        private void MD(object sender, MouseButtonEventArgs e)
+        void MD(object sender, MouseButtonEventArgs e)
         {
             Path p = (Path)sender;
             Title = p.Name + " DOWN";
             p.Fill = dico[p.Name].couleur;
         }
 
-        private void ML(object sender, MouseEventArgs e)
+        void ML(object sender, MouseEventArgs e)
         {
             Path p = (Path)sender;
             Title = p.Name + " LEAVE";
             p.Fill = dico[p.Name].couleur;
         }
 
+
+
+
+
+        void ME2(object sender, MouseEventArgs e)
+        {
+            Path p = (Path)sender;
+            Title = p.Name + " ENTER";
+            p.Fill = ABC.boutons[p.Name].couleurfonce;
+        }
+
+        void MD2(object sender, MouseButtonEventArgs e)
+        {
+            Path p = (Path)sender;
+            Title = p.Name + " DOWN";
+            p.Fill = ABC.boutons[p.Name].couleur;
+        }
+
+        void ML2(object sender, MouseEventArgs e)
+        {
+            Path p = (Path)sender;
+            Title = p.Name + " LEAVE";
+            p.Fill = ABC.boutons[p.Name].couleur;
+        }
     }
 }
