@@ -48,7 +48,8 @@ namespace arc
                         index = ele.anneau_index,
                         rayon_interne = ele.anneau_index * epaisseur,
                         rayon_externe = (ele.anneau_index + 1) * epaisseur,
-                        angle_origine = angle_origine_deg
+                        angle_origine = angle_origine_deg,
+                        ringButtons = this
                     });
                 anneaux[ele.anneau_index].elements.Add(ele);
                 ele.anneau = anneaux[ele.anneau_index];
@@ -83,6 +84,7 @@ namespace arc
         public Element(string name, string[] charSep, RingButtons ringButtons)
         {
             this.name = name;
+            this.display = name;
             this.ringButtons = ringButtons;
 
             deg = name.Split(charSep, StringSplitOptions.RemoveEmptyEntries);
@@ -103,6 +105,11 @@ namespace arc
                 parent = ringButtons.elements[parent_name];
 
         }
+
+        public override string ToString()
+        {
+            return $"{name} anneau {anneau.index} {angle_ouverture_deg} {angle_ouverture_deb} {angle_ouverture_fin}";
+        }
     }
 
     public class Ring
@@ -112,6 +119,7 @@ namespace arc
         public float rayon_externe;
         public float rayon_interne;
         public List<Element> elements = new List<Element>();
+        public RingButtons ringButtons;
     }
     internal class Button
     {
