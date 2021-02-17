@@ -308,25 +308,27 @@ namespace arc
 
                 //triangle - non centré !!!!
                 //float d = (float)(marge / Math.Cos(element.angle_ouverture_deg / 2 * Math.PI / 180));
-                //float X = (float)(centre.X - centre.X * Math.Tan(element.angle_ouverture_deg / 2 * Math.PI / 180));
-                //float X_ = (float)(centre.X + centre.X * Math.Tan(element.angle_ouverture_deg / 2 * Math.PI / 180));
+                float X = (float)(centre.X - centre.X * Math.Tan(element.angle_ouverture_deg / 2 * Math.PI / 180));
+                float X_ = (float)(centre.X + centre.X * Math.Tan(element.angle_ouverture_deg / 2 * Math.PI / 180));
                 //float X = r_ext - (float)(r_ext * Math.Tan(element.angle_ouverture_deg / 2 * Math.PI / 180));
                 //float X_ = r_ext + (float)(r_ext * Math.Tan(element.angle_ouverture_deg / 2 * Math.PI / 180));
 
-                double R = centre.X + 100;
+                //double R = centre.X + 100;
 
-                float XA = (float)(centre.X + R * Math.Cos(element.angle_ouverture_deb * Math.PI / 180));
-                float YA = (float)(centre.X + R * Math.Sin(element.angle_ouverture_deb * Math.PI / 180));
+                //float XA = (float)(centre.X + R * Math.Cos(element.angle_ouverture_deb * Math.PI / 180));
+                //float YA = (float)(centre.X + R * Math.Sin(element.angle_ouverture_deb * Math.PI / 180));
 
-                float XB = (float)(centre.X + R * Math.Cos(element.angle_ouverture_fin * Math.PI / 180));
-                float YB = (float)(centre.X + R * Math.Sin(element.angle_ouverture_fin * Math.PI / 180));
+                //float XB = (float)(centre.X + R * Math.Cos(element.angle_ouverture_fin * Math.PI / 180));
+                //float YB = (float)(centre.X + R * Math.Sin(element.angle_ouverture_fin * Math.PI / 180));
 
-                //if (X < -100000) X = -100000;
-                //if (X_ > 100000) X_ = 100000;
+                if (X < -100000) X = -100000;
+                if (X_ > 100000) X_ = 100000;
 
                 //Point c_ = new Point(r_ext, r_ext - d);
-                LineSegment A = new LineSegment(new Point(XA, YA), true);
-                LineSegment B = new LineSegment(new Point(XB, YB), true);
+                //LineSegment A = new LineSegment(new Point(XA, YA), true);
+                //LineSegment B = new LineSegment(new Point(XB, YB), true); 
+                LineSegment A = new LineSegment(new Point(X, 0), true);
+                LineSegment B = new LineSegment(new Point(X_, 0), true);
 
                 LineSegment[] s = new LineSegment[] { A, B };
                 //PathFigure t = new PathFigure(c_, s, true);
@@ -334,7 +336,7 @@ namespace arc
                 PathGeometry triangle = new PathGeometry(new PathFigure[] { t });
                 //secteur
                 c = new CombinedGeometry(GeometryCombineMode.Intersect, anneau, triangle);
-                //p.RenderTransform = new RotateTransform(element.angle_ouverture_deb + element.angle_ouverture_deg / 2, centre.X, centre.Y);
+                p.RenderTransform = new RotateTransform(element.angle_ouverture_deb + element.angle_ouverture_deg / 2, centre.X, centre.Y);
             }
 
             p.Data = c;
