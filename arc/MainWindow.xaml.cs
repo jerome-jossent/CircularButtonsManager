@@ -232,8 +232,8 @@ namespace arc
         {
             //Point c = new Point(anneau.rayon_externe, anneau.rayon_externe);
             Grid g = new Grid();
-            g.Width = anneau.ringButtons.anneaux.Last().Value.rayon_externe; // anneau.rayon_externe * 2;
-            g.Height = anneau.ringButtons.anneaux.Last().Value.rayon_externe; //anneau.rayon_externe * 2;
+            g.Width = anneau.ringButtons.anneaux.Last().Value.rayon_externe * 2; // anneau.rayon_externe * 2;
+            g.Height = anneau.ringButtons.anneaux.Last().Value.rayon_externe * 2; //anneau.rayon_externe * 2;
             //g.Width = anneau.rayon_externe * 2;
             //g.Height = anneau.rayon_externe * 2;
 
@@ -306,27 +306,35 @@ namespace arc
                                                                new EllipseGeometry(centre, r_int, r_int));
                 float marge = 0;
 
-                //triangle - centré !!!!
-                float d = (float)(marge / Math.Cos(element.angle_ouverture_deg / 2 * Math.PI / 180));
-                float X = (float)(centre.X - centre.X * Math.Tan(element.angle_ouverture_deg / 2 * Math.PI / 180));
-                float X_ = (float)(centre.X + centre.X * Math.Tan(element.angle_ouverture_deg / 2 * Math.PI / 180));
+                //triangle - non centré !!!!
+                //float d = (float)(marge / Math.Cos(element.angle_ouverture_deg / 2 * Math.PI / 180));
+                //float X = (float)(centre.X - centre.X * Math.Tan(element.angle_ouverture_deg / 2 * Math.PI / 180));
+                //float X_ = (float)(centre.X + centre.X * Math.Tan(element.angle_ouverture_deg / 2 * Math.PI / 180));
                 //float X = r_ext - (float)(r_ext * Math.Tan(element.angle_ouverture_deg / 2 * Math.PI / 180));
                 //float X_ = r_ext + (float)(r_ext * Math.Tan(element.angle_ouverture_deg / 2 * Math.PI / 180));
 
-                if (X < -100000) X = -100000;
-                if (X_ > 100000) X_ = 100000;
+                double R = centre.X + 100;
+
+                float XA = (float)(centre.X + R * Math.Cos(element.angle_ouverture_deb * Math.PI / 180));
+                float YA = (float)(centre.X + R * Math.Sin(element.angle_ouverture_deb * Math.PI / 180));
+
+                float XB = (float)(centre.X + R * Math.Cos(element.angle_ouverture_fin * Math.PI / 180));
+                float YB = (float)(centre.X + R * Math.Sin(element.angle_ouverture_fin * Math.PI / 180));
+
+                //if (X < -100000) X = -100000;
+                //if (X_ > 100000) X_ = 100000;
 
                 //Point c_ = new Point(r_ext, r_ext - d);
-                LineSegment x = new LineSegment(new Point(X, -d), true);
-                LineSegment x_ = new LineSegment(new Point(X_, -d), true);
+                LineSegment A = new LineSegment(new Point(XA, YA), true);
+                LineSegment B = new LineSegment(new Point(XB, YB), true);
 
-                LineSegment[] s = new LineSegment[] { x, x_ };
+                LineSegment[] s = new LineSegment[] { A, B };
                 //PathFigure t = new PathFigure(c_, s, true);
                 PathFigure t = new PathFigure(centre, s, true);
                 PathGeometry triangle = new PathGeometry(new PathFigure[] { t });
                 //secteur
                 c = new CombinedGeometry(GeometryCombineMode.Intersect, anneau, triangle);
-                p.RenderTransform = new RotateTransform(element.angle_ouverture_deb + element.angle_ouverture_deg / 2, centre.X, centre.Y);
+                //p.RenderTransform = new RotateTransform(element.angle_ouverture_deb + element.angle_ouverture_deg / 2, centre.X, centre.Y);
             }
 
             p.Data = c;
