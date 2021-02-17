@@ -91,9 +91,9 @@ namespace arc
             ABC = new RingButtons(abc, new string[1] { ";" });
             grd.Children.Clear();
             Viewbox v = new Viewbox();
-            Canvas c = ABC.CreateRingButtons(ME2, ML2, MD2);            
+            Canvas c = ABC.CreateRingButtons(ME2, ML2, MD2);
             c.Width = 1000;
-            c.Height= 1000;
+            c.Height = 1000;
             c.HorizontalAlignment = HorizontalAlignment.Left;
             c.VerticalAlignment = VerticalAlignment.Top;
             v.Child = c;
@@ -154,61 +154,61 @@ namespace arc
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
         }
 
-        public int intvalue
-        {
-            get { return _intvalue; }
-            set
-            {
-                if (value == _intvalue) return;
+        //public int intvalue
+        //{
+        //    get { return _intvalue; }
+        //    set
+        //    {
+        //        if (value == _intvalue) return;
 
-                if (sliders == null)
-                {
-                    sliders = new Dictionary<int, Standard_UC_JJO.Slider_INT_JJO>();
-                    grd.Children.Clear();
-                }
+        //        if (sliders == null)
+        //        {
+        //            sliders = new Dictionary<int, Standard_UC_JJO.Slider_INT_JJO>();
+        //            grd.Children.Clear();
+        //        }
 
-                if (value > _intvalue)
-                {
-                    //add
-                    int val_init = sliders.Count;
-                    for (int i = val_init; i < value; i++)
-                    {
-                        Standard_UC_JJO.Slider_INT_JJO slider = new Standard_UC_JJO.Slider_INT_JJO();
-                        slider._label_title = $"Anneau {i} : nombre de boutons";
-                        slider._index = i;
-                        slider._value_min = 1;
-                        slider._value_max = 20;
-                        slider._ValueChanged += Rings_ButtonsNumberChanged;
-                        sliders.Add(i, slider);
-                        sp_rings_sliders.Children.Add(slider);
-                    }
-                }
-                else
-                {
-                    while (sliders.Count > value)
-                    {
-                        int clef = sliders.Last().Key;
-                        Standard_UC_JJO.Slider_INT_JJO slider = sliders[clef];
-                        slider._ValueChanged -= Rings_ButtonsNumberChanged;
-                        sp_rings_sliders.Children.Remove(slider);
-                        sliders.Remove(clef);
-                    }
-                }
+        //        if (value > _intvalue)
+        //        {
+        //            //add
+        //            int val_init = sliders.Count;
+        //            for (int i = val_init; i < value; i++)
+        //            {
+        //                Standard_UC_JJO.Slider_INT_JJO slider = new Standard_UC_JJO.Slider_INT_JJO();
+        //                slider._label_title = $"Anneau {i} : nombre de boutons";
+        //                slider._index = i;
+        //                slider._value_min = 1;
+        //                slider._value_max = 20;
+        //                slider._ValueChanged += Rings_ButtonsNumberChanged;
+        //                sliders.Add(i, slider);
+        //                sp_rings_sliders.Children.Add(slider);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            while (sliders.Count > value)
+        //            {
+        //                int clef = sliders.Last().Key;
+        //                Standard_UC_JJO.Slider_INT_JJO slider = sliders[clef];
+        //                slider._ValueChanged -= Rings_ButtonsNumberChanged;
+        //                sp_rings_sliders.Children.Remove(slider);
+        //                sliders.Remove(clef);
+        //            }
+        //        }
 
-                _intvalue = value;
-                OnPropertyChanged("intvalue");
-            }
-        }
-        int _intvalue;
+        //        _intvalue = value;
+        //        OnPropertyChanged("intvalue");
+        //    }
+        //}
+        //int _intvalue;
 
-        void Rings_ButtonsNumberChanged(object sender, EventArgs e)
-        {
-            Slider s = (Slider)sender;
-            Grid g = (Grid)(s.Parent);
-            Standard_UC_JJO.Slider_INT_JJO slider = (Standard_UC_JJO.Slider_INT_JJO)(g.Parent);
-            CreateButtons_FromSliders();
-        }
-        
+        //void Rings_ButtonsNumberChanged(object sender, EventArgs e)
+        //{
+        //    Slider s = (Slider)sender;
+        //    Grid g = (Grid)(s.Parent);
+        //    Standard_UC_JJO.Slider_INT_JJO slider = (Standard_UC_JJO.Slider_INT_JJO)(g.Parent);
+        //    CreateButtons_FromSliders();
+        //}
+
         void CreateButtons_FromSliders()
         {
             int marge = 0;
@@ -226,6 +226,100 @@ namespace arc
 
             grd.Children.Clear();
             grd.Children.Add(c);
+        }
+
+        public int R0_B
+        {
+            get { return _R0_B; }
+            set { _R0_B = value; OnPropertyChanged("R0_B"); CreateButtons_FromSliders2(); }
+        }
+        int _R0_B;
+        public int R1_B
+        {
+            get { return _R1_B; }
+            set { _R1_B = value; OnPropertyChanged("R1_B"); CreateButtons_FromSliders2(); }
+        }
+        int _R1_B;
+        public int R2_B
+        {
+            get { return _R2_B; }
+            set { _R2_B = value; OnPropertyChanged("R2_B"); CreateButtons_FromSliders2(); }
+        }
+        int _R2_B;
+        public int R3_B
+        {
+            get { return _R3_B; }
+            set { _R3_B = value; OnPropertyChanged("R3_B"); CreateButtons_FromSliders2(); }
+        }
+        int _R3_B;
+        public int R4_B
+        {
+            get { return _R4_B; }
+            set { _R4_B = value; OnPropertyChanged("R4_B"); CreateButtons_FromSliders2(); }
+        }
+        int _R4_B;
+
+
+        public int R0_R
+        {
+            get { return _R0_R; }
+            set { _R0_R = value; OnPropertyChanged("R0_R"); CreateButtons_FromSliders2(); }
+        }
+        int _R0_R;
+        public int R1_R
+        {
+            get { return _R1_R; }
+            set { _R1_R = value; OnPropertyChanged("R1_R"); CreateButtons_FromSliders2(); }
+        }
+        int _R1_R;
+        public int R2_R
+        {
+            get { return _R2_R; }
+            set { _R2_R = value; OnPropertyChanged("R2_R"); CreateButtons_FromSliders2(); }
+        }
+        int _R2_R;
+        public int R3_R
+        {
+            get { return _R3_R; }
+            set { _R3_R = value; OnPropertyChanged("R3_R"); CreateButtons_FromSliders2(); }
+        }
+        int _R3_R;
+        public int R4_R
+        {
+            get { return _R4_R; }
+            set { _R4_R = value; OnPropertyChanged("R4_R"); CreateButtons_FromSliders2(); }
+        }
+        int _R4_R;
+
+        void CreateButtons_FromSliders2()
+        {
+            int marge = 0;
+            float r_max = R0_R + R1_R + R2_R + R3_R + R4_R;
+            //float epaisseur = r_max / sliders.Count;
+            dico = new Dictionary<string, Button>();
+
+            Viewbox v = new Viewbox();
+            Canvas c = new Canvas();
+            c.Children.Add(DrawSecteurs(0, R0_R, r_max, R0_R, R0_B, marge));
+            c.Children.Add(DrawSecteurs(1, R0_R + R1_R, r_max, R1_R, R1_B, marge));
+            c.Children.Add(DrawSecteurs(2, R0_R + R1_R + R2_R, r_max, R2_R, R2_B, marge));
+            c.Children.Add(DrawSecteurs(3, R0_R + R1_R + R2_R + R3_R, r_max, R3_R, R3_B, marge));
+            c.Children.Add(DrawSecteurs(4, R0_R + R1_R + R2_R + R3_R + R4_R, r_max, R4_R, R4_B, marge));
+
+            lbl_nbr_boutons.Content = dico.Count + " boutons";
+
+            c.Width = r_max;
+            c.Height = r_max;
+            c.HorizontalAlignment = HorizontalAlignment.Left;
+            c.VerticalAlignment = VerticalAlignment.Top;
+            v.Child = c;
+            v.HorizontalAlignment = HorizontalAlignment.Left;
+            v.VerticalAlignment = VerticalAlignment.Top;
+
+            grd.Children.Clear();
+
+            //v.Stretch = Stretch.UniformToFill;
+            grd.Children.Add(v);
         }
 
         Viewbox DrawSecteurs(int ring_index, float r_ext, float r_extMAX, float epaisseur, int nbrboutons, float marge)

@@ -19,13 +19,59 @@
             <MenuItem Header="Dynamique" Click="Mode_Dynamique"/>
             <MenuItem Header="Source" Click="Mode_Source"/>
         </Menu>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Name="lbl_nbr_boutons" Content=""/>
+
+            <Standard_UC_JJO:Slider_INT_JJO Grid.Row="1" Grid.Column="0" _label_title="Anneau 0 - Boutons" _value_min="0" _value_max="20"
+                  _value="{Binding DataContext.R0_B, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"/>
+            <Standard_UC_JJO:Slider_INT_JJO Grid.Row="1" Grid.Column="1" _label_title="Taille" _value_min="0" _value_max="200"
+                  _value="{Binding DataContext.R0_R, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"/>
+
+            <Standard_UC_JJO:Slider_INT_JJO Grid.Row="2" Grid.Column="0" _label_title="Anneau 1 - Boutons" _value_min="0" _value_max="20"
+                  _value="{Binding DataContext.R1_B, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"/>
+            <Standard_UC_JJO:Slider_INT_JJO Grid.Row="2" Grid.Column="1" _label_title="Taille" _value_min="0" _value_max="200"
+                  _value="{Binding DataContext.R1_R, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"/>
+
+            <Standard_UC_JJO:Slider_INT_JJO Grid.Row="3" Grid.Column="0" _label_title="Anneau 2 - Boutons" _value_min="0" _value_max="20"
+                  _value="{Binding DataContext.R2_B, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"/>
+            <Standard_UC_JJO:Slider_INT_JJO Grid.Row="3" Grid.Column="1" _label_title="Taille" _value_min="0" _value_max="200"
+                  _value="{Binding DataContext.R2_R, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"/>
+
+            <Standard_UC_JJO:Slider_INT_JJO Grid.Row="4" Grid.Column="0" _label_title="Anneau 3 - Boutons" _value_min="0" _value_max="20"
+                  _value="{Binding DataContext.R3_B, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"/>
+            <Standard_UC_JJO:Slider_INT_JJO Grid.Row="4" Grid.Column="1" _label_title="Taille" _value_min="0" _value_max="200"
+                  _value="{Binding DataContext.R3_R, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"/>
+
+            <Standard_UC_JJO:Slider_INT_JJO Grid.Row="5" Grid.Column="0" _label_title="Anneau 4 - Boutons" _value_min="0" _value_max="20"
+                  _value="{Binding DataContext.R4_B, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"/>
+            <Standard_UC_JJO:Slider_INT_JJO Grid.Row="5" Grid.Column="1" _label_title="Taille" _value_min="0" _value_max="200"
+                  _value="{Binding DataContext.R4_R, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"/>
+
+
+
+
+        </Grid>
         
-        <StackPanel Grid.Row="1" Orientation="Vertical" Name="sp_rings_sliders">
+        
+        <!--<StackPanel Grid.Row="1" Orientation="Vertical" Name="sp_rings_sliders">
             <Standard_UC_JJO:Slider_INT_JJO _label_title="Nombre d'anneau"  
                   _value="{Binding DataContext.intvalue, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}" 
                   _value_min="1" _value_max="5"/>
             <Label Name="lbl_nbr_boutons" Content=""/>
-        </StackPanel>
+        </StackPanel>-->
 
         <Grid Grid.Row="2" x:Name="grd"/>
     </Grid>
