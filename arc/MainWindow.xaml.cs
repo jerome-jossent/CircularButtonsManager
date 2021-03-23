@@ -19,10 +19,8 @@ namespace arc
     {
         //http://csharphelper.com/blog/2019/05/make-an-intuitive-extension-method-to-draw-an-elliptical-arc-in-wpf-and-c/
         //http://csharphelper.com/blog/2014/12/find-the-area-where-circles-overlap-in-c/
-
         List<SolidColorBrush> colors;
         Dictionary<string, Button> dico;
-        Dictionary<int, Standard_UC_JJO.Slider_INT_JJO> sliders;
         RingButtons ABC;
 
         public MainWindow()
@@ -34,7 +32,8 @@ namespace arc
             colors = new List<SolidColorBrush>() {Brushes.Red, Brushes.Green, Brushes.Yellow, Brushes.Magenta, Brushes.Blue,
                                                 Brushes.Cyan, Brushes.Orange, Brushes.Brown, Brushes.Khaki, Brushes.Salmon };
         }
-
+        
+        #region LAUNCHERS=========================================================
         private void Mode_Manu(object sender, RoutedEventArgs e)
         {
             MenuDynamiqueHide();
@@ -44,7 +43,10 @@ namespace arc
         void Mode_Dynamique(object sender, RoutedEventArgs e)
         {
             if (slider_dynamique.Height == new GridLength(0))
+            {
                 slider_dynamique.Height = new GridLength(1, GridUnitType.Auto);
+                CreateButtons_FromSliders2();
+            }
             else
                 MenuDynamiqueHide();
         }
@@ -54,79 +56,17 @@ namespace arc
             slider_dynamique.Height = new GridLength(0);
         }
 
-
-        private void Mode_Source(object sender, RoutedEventArgs e)
+        void Mode_Source(object sender, RoutedEventArgs e)
         {
             MenuDynamiqueHide();
-
-            List<string> abc = new List<string>() {
-                                                    "ABC",
-                                                    "ABC;A", "ABC;B", "ABC;C", "ABC;D",
-                                                    "ABC;A;A","ABC;A;B",
-                                                    "ABC;A;B;A","ABC;A;B;B",
-                                                    "ABC;A;A;A","ABC;A;A;B",
-                                                    "ABC;C;A","ABC;C;B","ABC;C;C",
-                                                    "ABC;D;A","ABC;D;B","ABC;D;C","ABC;D;D",
-                                                    "ABC;D;A;A","ABC;D;A;B","ABC;D;A;C","ABC;D;A;D",
-                                                    "ABC;D;A;A;A","ABC;D;A;A;B","ABC;D;A;A;C","ABC;D;A;A;D",
-                                                    "ABC;A;B;B;A","ABC;A;B;B;B",
-                                                };
-
-
-            //List<string> abc = new List<string>() {
-            //                                        "ABC",
-            //                                        "ABC;A"//; "ABC;B",
-            //                                        //"ABC;A;A","ABC;A;B",
-            //                                        //"ABC;A;A;A","ABC;A;A;B"
-            //                                    };
-
-            //List<string> abc_light = new List<string>() {
-            //                                        "ABC;B",
-            //                                        "ABC;A;B",
-            //                                        "ABC;A;A;A","ABC;A;A;B",
-            //                                        "ABC;C;A","ABC;C;B","ABC;C;C",
-            //                                        "ABC;D;A","ABC;D;B","ABC;D;C","ABC;D;D"
-            //                                    };
-
-            ABC = new RingButtons(abc, new string[1] { ";" });
-            grd.Children.Clear();
-            Viewbox v = new Viewbox();
-            Canvas c = ABC.CreateRingButtons(ME2, ML2, MD2);
-            c.Width = 1000;
-            c.Height = 1000;
-            c.HorizontalAlignment = HorizontalAlignment.Left;
-            c.VerticalAlignment = VerticalAlignment.Top;
-            v.Child = c;
-            v.HorizontalAlignment = HorizontalAlignment.Left;
-            v.VerticalAlignment = VerticalAlignment.Top;
-            //v.Stretch = Stretch.UniformToFill;
-            grd.Children.Add(v);
+            CreateButtonsModeSource();
         }
-
-        //Dictionary<int, List<List<int>>> operations = Operation.OperationsGenerator(10, 20, 2);
-
-        void ME2(object sender, MouseEventArgs e)
-        {
-            Path p = (Path)sender;
-            Title = ABC.boutons[p.Name].element.display + " ENTER";
-            p.Fill = ABC.boutons[p.Name].couleurfonce;
-        }
-
-        void MD2(object sender, MouseButtonEventArgs e)
-        {
-            Path p = (Path)sender;
-            Title = ABC.boutons[p.Name].element.display + " DOWN";
-            p.Fill = ABC.boutons[p.Name].couleur;
-        }
-
-        void ML2(object sender, MouseEventArgs e)
-        {
-            Path p = (Path)sender;
-            Title = ABC.boutons[p.Name].element.display + " LEAVE";
-            p.Fill = ABC.boutons[p.Name].couleur;
-        }
-
-        //=================================================================
+        
+        //From Operations...
+         //Dictionary<int, List<List<int>>> operations = Operation.OperationsGenerator(10, 20, 2);
+        #endregion
+               
+        #region Mode_Manu=========================================================
         void CreateButtons()
         {
             dico = new Dictionary<string, Button>();
@@ -144,153 +84,9 @@ namespace arc
             grd.Children.Clear();
             grd.Children.Add(c);
         }
+        #endregion
 
-        //=================================================================
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(String property)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-        }
-
-        //public int intvalue
-        //{
-        //    get { return _intvalue; }
-        //    set
-        //    {
-        //        if (value == _intvalue) return;
-
-        //        if (sliders == null)
-        //        {
-        //            sliders = new Dictionary<int, Standard_UC_JJO.Slider_INT_JJO>();
-        //            grd.Children.Clear();
-        //        }
-
-        //        if (value > _intvalue)
-        //        {
-        //            //add
-        //            int val_init = sliders.Count;
-        //            for (int i = val_init; i < value; i++)
-        //            {
-        //                Standard_UC_JJO.Slider_INT_JJO slider = new Standard_UC_JJO.Slider_INT_JJO();
-        //                slider._label_title = $"Anneau {i} : nombre de boutons";
-        //                slider._index = i;
-        //                slider._value_min = 1;
-        //                slider._value_max = 20;
-        //                slider._ValueChanged += Rings_ButtonsNumberChanged;
-        //                sliders.Add(i, slider);
-        //                sp_rings_sliders.Children.Add(slider);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            while (sliders.Count > value)
-        //            {
-        //                int clef = sliders.Last().Key;
-        //                Standard_UC_JJO.Slider_INT_JJO slider = sliders[clef];
-        //                slider._ValueChanged -= Rings_ButtonsNumberChanged;
-        //                sp_rings_sliders.Children.Remove(slider);
-        //                sliders.Remove(clef);
-        //            }
-        //        }
-
-        //        _intvalue = value;
-        //        OnPropertyChanged("intvalue");
-        //    }
-        //}
-        //int _intvalue;
-
-        //void Rings_ButtonsNumberChanged(object sender, EventArgs e)
-        //{
-        //    Slider s = (Slider)sender;
-        //    Grid g = (Grid)(s.Parent);
-        //    Standard_UC_JJO.Slider_INT_JJO slider = (Standard_UC_JJO.Slider_INT_JJO)(g.Parent);
-        //    CreateButtons_FromSliders();
-        //}
-
-        void CreateButtons_FromSliders()
-        {
-            int marge = 0;
-            float r_max = 300;
-            float epaisseur = r_max / sliders.Count;
-            float r_1 = r_max * 1 / 6;
-            float r_2 = r_max * 1 / 3;
-            dico = new Dictionary<string, Button>();
-
-            Canvas c = new Canvas();
-            for (int i = 0; i < sliders.Count; i++)
-                c.Children.Add(DrawSecteurs(i, r_max * (i + 1) / sliders.Count, r_max, epaisseur, (int)sliders[i]._sld.Value, marge));
-
-            lbl_nbr_boutons.Content = dico.Count + " boutons";
-
-            grd.Children.Clear();
-            grd.Children.Add(c);
-        }
-
-        public int R0_B
-        {
-            get { return _R0_B; }
-            set { _R0_B = value; OnPropertyChanged("R0_B"); CreateButtons_FromSliders2(); }
-        }
-        int _R0_B;
-        public int R1_B
-        {
-            get { return _R1_B; }
-            set { _R1_B = value; OnPropertyChanged("R1_B"); CreateButtons_FromSliders2(); }
-        }
-        int _R1_B;
-        public int R2_B
-        {
-            get { return _R2_B; }
-            set { _R2_B = value; OnPropertyChanged("R2_B"); CreateButtons_FromSliders2(); }
-        }
-        int _R2_B;
-        public int R3_B
-        {
-            get { return _R3_B; }
-            set { _R3_B = value; OnPropertyChanged("R3_B"); CreateButtons_FromSliders2(); }
-        }
-        int _R3_B;
-        public int R4_B
-        {
-            get { return _R4_B; }
-            set { _R4_B = value; OnPropertyChanged("R4_B"); CreateButtons_FromSliders2(); }
-        }
-        int _R4_B;
-
-
-        public int R0_R
-        {
-            get { return _R0_R; }
-            set { _R0_R = value; OnPropertyChanged("R0_R"); CreateButtons_FromSliders2(); }
-        }
-        int _R0_R;
-        public int R1_R
-        {
-            get { return _R1_R; }
-            set { _R1_R = value; OnPropertyChanged("R1_R"); CreateButtons_FromSliders2(); }
-        }
-        int _R1_R;
-        public int R2_R
-        {
-            get { return _R2_R; }
-            set { _R2_R = value; OnPropertyChanged("R2_R"); CreateButtons_FromSliders2(); }
-        }
-        int _R2_R;
-        public int R3_R
-        {
-            get { return _R3_R; }
-            set { _R3_R = value; OnPropertyChanged("R3_R"); CreateButtons_FromSliders2(); }
-        }
-        int _R3_R;
-        public int R4_R
-        {
-            get { return _R4_R; }
-            set { _R4_R = value; OnPropertyChanged("R4_R"); CreateButtons_FromSliders2(); }
-        }
-        int _R4_R;
-
+        #region Mode_Dynamique====================================================
         void CreateButtons_FromSliders2()
         {
             int marge = 0;
@@ -322,6 +118,100 @@ namespace arc
             grd.Children.Add(v);
         }
 
+        void ME2(object sender, MouseEventArgs e)
+        {
+            Path p = (Path)sender;
+            Title = ABC.boutons[p.Name].element.display + " ENTER";
+            p.Fill = ABC.boutons[p.Name].couleurfonce;
+        }
+
+        void MD2(object sender, MouseButtonEventArgs e)
+        {
+            Path p = (Path)sender;
+            Title = ABC.boutons[p.Name].element.display + " DOWN";
+            p.Fill = ABC.boutons[p.Name].couleur;
+        }
+
+        void ML2(object sender, MouseEventArgs e)
+        {
+            Path p = (Path)sender;
+            Title = ABC.boutons[p.Name].element.display + " LEAVE";
+            p.Fill = ABC.boutons[p.Name].couleur;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(String property)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(property));
+        }
+
+        #region Binding
+        public int R0_B
+        {
+            get { return _R0_B; }
+            set { _R0_B = value; OnPropertyChanged("R0_B"); CreateButtons_FromSliders2(); }
+        }
+        int _R0_B = 3;
+        public int R1_B
+        {
+            get { return _R1_B; }
+            set { _R1_B = value; OnPropertyChanged("R1_B"); CreateButtons_FromSliders2(); }
+        }
+        int _R1_B = 7;
+        public int R2_B
+        {
+            get { return _R2_B; }
+            set { _R2_B = value; OnPropertyChanged("R2_B"); CreateButtons_FromSliders2(); }
+        }
+        int _R2_B = 12;
+        public int R3_B
+        {
+            get { return _R3_B; }
+            set { _R3_B = value; OnPropertyChanged("R3_B"); CreateButtons_FromSliders2(); }
+        }
+        int _R3_B = 15;
+        public int R4_B
+        {
+            get { return _R4_B; }
+            set { _R4_B = value; OnPropertyChanged("R4_B"); CreateButtons_FromSliders2(); }
+        }
+        int _R4_B = 20;
+        //------------------------
+        public int R0_R
+        {
+            get { return _R0_R; }
+            set { _R0_R = value; OnPropertyChanged("R0_R"); CreateButtons_FromSliders2(); }
+        }
+        int _R0_R = 150;
+        public int R1_R
+        {
+            get { return _R1_R; }
+            set { _R1_R = value; OnPropertyChanged("R1_R"); CreateButtons_FromSliders2(); }
+        }
+        int _R1_R = 120;
+        public int R2_R
+        {
+            get { return _R2_R; }
+            set { _R2_R = value; OnPropertyChanged("R2_R"); CreateButtons_FromSliders2(); }
+        }
+        int _R2_R = 100;
+        public int R3_R
+        {
+            get { return _R3_R; }
+            set { _R3_R = value; OnPropertyChanged("R3_R"); CreateButtons_FromSliders2(); }
+        }
+        int _R3_R = 90;
+        public int R4_R
+        {
+            get { return _R4_R; }
+            set { _R4_R = value; OnPropertyChanged("R4_R"); CreateButtons_FromSliders2(); }
+        }
+        int _R4_R = 80;
+        #endregion
+        #endregion
+
+        #region Mode_Manu & Mode_Dynamique========================================
         Viewbox DrawSecteurs(int ring_index, float r_ext, float r_extMAX, float epaisseur, int nbrboutons, float marge)
         {
             float r_int = r_ext - epaisseur;
@@ -456,6 +346,54 @@ namespace arc
             Title = p.Name + " LEAVE";
             p.Fill = dico[p.Name].couleur;
         }
+        #endregion
 
+        #region ModeSource========================================================
+        void CreateButtonsModeSource()
+        {
+            List<string> abc = new List<string>() {
+                                                    "ABC",
+                                                    "ABC;A", "ABC;B", "ABC;C", "ABC;D",
+                                                    "ABC;A;A","ABC;A;B",
+                                                    "ABC;A;B;A","ABC;A;B;B",
+                                                    "ABC;A;A;A","ABC;A;A;B",
+                                                    "ABC;C;A","ABC;C;B","ABC;C;C",
+                                                    "ABC;D;A","ABC;D;B","ABC;D;C","ABC;D;D",
+                                                    "ABC;D;A;A","ABC;D;A;B","ABC;D;A;C","ABC;D;A;D",
+                                                    "ABC;D;A;A;A","ABC;D;A;A;B","ABC;D;A;A;C","ABC;D;A;A;D",
+                                                    "ABC;A;B;B;A","ABC;A;B;B;B",
+                                                };
+
+
+            //List<string> abc = new List<string>() {
+            //                                        "ABC",
+            //                                        "ABC;A"//; "ABC;B",
+            //                                        //"ABC;A;A","ABC;A;B",
+            //                                        //"ABC;A;A;A","ABC;A;A;B"
+            //                                    };
+
+            //List<string> abc_light = new List<string>() {
+            //                                        "ABC;B",
+            //                                        "ABC;A;B",
+            //                                        "ABC;A;A;A","ABC;A;A;B",
+            //                                        "ABC;C;A","ABC;C;B","ABC;C;C",
+            //                                        "ABC;D;A","ABC;D;B","ABC;D;C","ABC;D;D"
+            //                                    };
+
+            ABC = new RingButtons(abc, new string[1] { ";" });
+            grd.Children.Clear();
+            Viewbox v = new Viewbox();
+            Canvas c = ABC.CreateRingButtons(ME2, ML2, MD2);
+            c.Width = 1000;
+            c.Height = 1000;
+            c.HorizontalAlignment = HorizontalAlignment.Left;
+            c.VerticalAlignment = VerticalAlignment.Top;
+            v.Child = c;
+            v.HorizontalAlignment = HorizontalAlignment.Left;
+            v.VerticalAlignment = VerticalAlignment.Top;
+            //v.Stretch = Stretch.UniformToFill;
+            grd.Children.Add(v);
+        }
+        #endregion
     }
 }

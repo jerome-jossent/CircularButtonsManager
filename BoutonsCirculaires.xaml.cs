@@ -282,7 +282,7 @@ namespace EMGU.CV
                         // first values
                         // p0 = barycentre (parfait ou trop prêt du centre)
                         // t0 = 1
-                        // test : est ce qu'aucun pixels du carrée n'est vide (on a une image vide avec "seulement" le bouton de dessiné)
+                        // test : est ce qu'aucun pixels du carré n'est vide (on a une image vide avec "seulement" le bouton de dessiné)
                         // ==> on augmente t
                         // quand tmax atteint pour p donné, on change de p, avec p compris entre p0 et p sur axe avec D = rayon_ext - t
 

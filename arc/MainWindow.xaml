@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:arc"
         mc:Ignorable="d"
-        Title="MainWindow" Height="550" Width="450">
+        Title="MainWindow" Height="550" Width="680">
     <Grid >
         <Grid.RowDefinitions>
             <RowDefinition Height="22"/>
@@ -59,20 +59,35 @@
                   _value="{Binding DataContext.R4_B, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"/>
             <Standard_UC_JJO:Slider_INT_JJO Grid.Row="5" Grid.Column="1" _label_title="Taille" _value_min="0" _value_max="200"
                   _value="{Binding DataContext.R4_R, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"/>
-
-
-
-
         </Grid>
         
-        
-        <!--<StackPanel Grid.Row="1" Orientation="Vertical" Name="sp_rings_sliders">
-            <Standard_UC_JJO:Slider_INT_JJO _label_title="Nombre d'anneau"  
-                  _value="{Binding DataContext.intvalue, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}" 
-                  _value_min="1" _value_max="5"/>
-            <Label Name="lbl_nbr_boutons" Content=""/>
-        </StackPanel>-->
-
         <Grid Grid.Row="2" x:Name="grd"/>
+
+        <!--<Path Grid.Row="2" Stroke="Black" StrokeThickness="1" Fill="#FFCCFF" Height="100" Width="100" Name="btn_2" MouseEnter="ME" MouseDown="MD" MouseLeave="ML">
+            <Path.LayoutTransform>
+                <RotateTransform CenterX="0" CenterY="0" Angle="100"/>
+            </Path.LayoutTransform>
+            <Path.Data>
+                <CombinedGeometry GeometryCombineMode="Intersect">
+                    <CombinedGeometry.Geometry1>
+                        <GeometryGroup>
+                            <CombinedGeometry GeometryCombineMode="Exclude">
+                                <CombinedGeometry.Geometry1>
+                                    <EllipseGeometry RadiusX="50" RadiusY="50" Center="50,50" />
+                                </CombinedGeometry.Geometry1>
+                                <CombinedGeometry.Geometry2>
+                                    <EllipseGeometry RadiusX="25" RadiusY="25" Center="50,50" />
+                                </CombinedGeometry.Geometry2>
+                            </CombinedGeometry>
+                        </GeometryGroup>
+                    </CombinedGeometry.Geometry1>
+                    <CombinedGeometry.Geometry2>
+                        <RectangleGeometry Rect="55,55,50,50" />
+                    </CombinedGeometry.Geometry2>
+                </CombinedGeometry>
+            </Path.Data>
+        </Path>-->
+
+
     </Grid>
 </Window>
