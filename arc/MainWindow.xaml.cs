@@ -351,26 +351,26 @@ namespace arc
         #region ModeSource========================================================
         void CreateButtonsModeSource()
         {
-            List<string> abc = new List<string>() {
-                                                    "ABC",
-                                                    "ABC;A", "ABC;B", "ABC;C", "ABC;D",
-                                                    "ABC;A;A","ABC;A;B",
-                                                    "ABC;A;B;A","ABC;A;B;B",
-                                                    "ABC;A;A;A","ABC;A;A;B",
-                                                    "ABC;C;A","ABC;C;B","ABC;C;C",
-                                                    "ABC;D;A","ABC;D;B","ABC;D;C","ABC;D;D",
-                                                    "ABC;D;A;A","ABC;D;A;B","ABC;D;A;C","ABC;D;A;D",
-                                                    "ABC;D;A;A;A","ABC;D;A;A;B","ABC;D;A;A;C","ABC;D;A;A;D",
-                                                    "ABC;A;B;B;A","ABC;A;B;B;B",
-                                                };
-
-
             //List<string> abc = new List<string>() {
             //                                        "ABC",
-            //                                        "ABC;A"//; "ABC;B",
-            //                                        //"ABC;A;A","ABC;A;B",
-            //                                        //"ABC;A;A;A","ABC;A;A;B"
+            //                                        "ABC;A", "ABC;B", "ABC;C", "ABC;D",
+            //                                        "ABC;A;A","ABC;A;B",
+            //                                        "ABC;A;B;A","ABC;A;B;B",
+            //                                        "ABC;A;A;A","ABC;A;A;B",
+            //                                        "ABC;C;A","ABC;C;B","ABC;C;C",
+            //                                        "ABC;D;A","ABC;D;B","ABC;D;C","ABC;D;D",
+            //                                        "ABC;D;A;A","ABC;D;A;B","ABC;D;A;C","ABC;D;A;D",
+            //                                        "ABC;D;A;A;A","ABC;D;A;A;B","ABC;D;A;A;C","ABC;D;A;A;D",
+            //                                        "ABC;A;B;B;A","ABC;A;B;B;B",
             //                                    };
+
+
+            List<string> abc = new List<string>() {
+                                                    "ABC",
+                                                    "ABC;A", "ABC;B",
+                                                    "ABC;A;A","ABC;A;B",
+                                                    "ABC;A;A;A","ABC;A;A;B"
+                                                };
 
             //List<string> abc_light = new List<string>() {
             //                                        "ABC;B",
