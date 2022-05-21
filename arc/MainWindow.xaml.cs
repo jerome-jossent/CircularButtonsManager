@@ -417,6 +417,7 @@ namespace arc
 
             ABC = new RingButtons(abc, new string[1] { ";" });
             grd.Children.Clear();
+            grd.HorizontalAlignment = HorizontalAlignment.Center;
             Viewbox v = new Viewbox();
             Canvas c = ABC.CreateRingButtons(ME2, ML2, MD2);
             c.Width = 1000;

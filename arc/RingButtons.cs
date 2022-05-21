@@ -23,8 +23,27 @@ namespace arc
         {
             #region create Elements
             elements = Element.CreateElements(datas, charSep, this);
-            Element.CompleteElements(ref elements, this, out origine, out int nbr_anneaux);
+
+
+
+
+            //remove some elements:
+            List<string> key_to_remove = new List<string>();
+            foreach (var item in elements)
+            {
+                if (item.Value.name[0] != 'B')
+                    key_to_remove.Add(item.Key);
+            }
+            foreach (string key in key_to_remove)
+            {
+                elements.Remove(key);
+            }
+
+            Element.CompleteElements(ref elements, this, "Retour", charSep[0], out origine, out int nbr_anneaux);
             #endregion
+
+
+
 
             #region create Rings
             //max 500
@@ -147,7 +166,7 @@ namespace arc
                 t.Foreground = Brushes.Black;
                 t.TextAlignment = TextAlignment.Center;
                 t.TextWrapping = TextWrapping.NoWrap;
-
+                t.IsHitTestVisible = false;
                 //barycentre = 2/3 de distance entre r interne et r externe et avec angle = angle_secteur / 2
 
                 t.Margin = new Thickness(barycentre.X, barycentre.Y, 0, 0);

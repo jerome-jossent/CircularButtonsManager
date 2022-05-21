@@ -50,10 +50,10 @@ namespace arc
         //        parent = ringButtons.elements[parent_name];
         //}
 
-        public Element(string name, string[] charSep, RingButtons ringButtons)
+        public Element(string name, string[] charSep, string displayname, RingButtons ringButtons)
         {
             this.name = name;
-            this.display = name.Replace(charSep[0], "");
+            this.display = displayname;
             this.ringButtons = ringButtons;
 
             deg = name.Split(charSep, StringSplitOptions.RemoveEmptyEntries);
@@ -70,10 +70,10 @@ namespace arc
             isOrigin = parent_name == "";
         }
 
-        public Element(string name, RingButtons ringButtons, bool isOrigin)
+        public Element(string name, string displayname, RingButtons ringButtons, bool isOrigin)
         {
             this.name = name;
-            this.display = name.Replace(";", "");
+            this.display = displayname;
             this.ringButtons = ringButtons;
             this.isOrigin = isOrigin;
         }
@@ -83,7 +83,7 @@ namespace arc
             Dictionary<string, Element> elements = new Dictionary<string, Element>();
             for (int i = 0; i < datas.Count; i++)
             {
-                Element element = new Element(datas[i], charSep, ringButtons);
+                Element element = new Element(datas[i], charSep, datas[i].Replace(charSep[0], ""), ringButtons);
                 if (elements.ContainsKey(element.parent_name))
                     element.parent = elements[element.parent_name];
                 elements.Add(element.name, element);
@@ -91,20 +91,20 @@ namespace arc
             return elements;
         }
 
-        public static void CompleteElements(ref Dictionary<string, Element> elements, RingButtons ringButtons,
+        public static void CompleteElements(ref Dictionary<string, Element> elements, RingButtons ringButtons, string OrigineDisplayName, string stringToRemoveInNameForDisplayName,
             out Element origine, out int nbr_anneaux)
         {
             //Dictionary<string, Element> orphelins = new Dictionary<string, Element>();
             Dictionary<string, Element> parents_manquant = new Dictionary<string, Element>();
 
-            origine = new Element("retour", ringButtons, true);
+            origine = new Element("OrigineDisplayName", OrigineDisplayName, ringButtons, true);
             foreach (Element elem in elements.Values)
             {
                 if (elem.parent == null)
                 {
                     if (!parents_manquant.ContainsKey(elem.parent_name))
                     {
-                        Element newParent = new Element(elem.parent_name, ringButtons, false);
+                        Element newParent = new Element(elem.parent_name, elem.parent_name.Replace(stringToRemoveInNameForDisplayName, ""), ringButtons, false);
                         newParent.parent = origine;
                         parents_manquant.Add(elem.parent_name, newParent);
                     }
