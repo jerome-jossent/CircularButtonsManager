@@ -54,6 +54,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Element.cs" />
+    <Compile Include="Model\CodeObservable.cs" />
+    <Compile Include="Model\ObservablesReader.cs" />
     <Compile Include="Ring.cs" />
     <Compile Include="RingButtons.cs" />
     <Page Include="MainWindow.xaml">
@@ -89,16 +91,18 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="Data\BaseDefs13508_V2.fr" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Standard_UC_JJO\Standard_UC_JJO.csproj">
+    <ProjectReference Include="..\..\Standard_UC_JJO\Standard_UC_.Net4_JJO\Standard_UC_JJO.csproj">
       <Project>{24bdeb06-738e-4392-a78d-163185a26329}</Project>
       <Name>Standard_UC_JJO</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Advise_IHM.Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace arc
             colors = new List<SolidColorBrush>() {Brushes.Red, Brushes.Green, Brushes.Yellow, Brushes.Magenta, Brushes.Blue,
                                                 Brushes.Cyan, Brushes.Orange, Brushes.Brown, Brushes.Khaki, Brushes.Salmon };
         }
-        
+
         #region LAUNCHERS=========================================================
         private void Mode_Manu(object sender, RoutedEventArgs e)
         {
@@ -61,11 +62,11 @@ namespace arc
             MenuDynamiqueHide();
             CreateButtonsModeSource();
         }
-        
+
         //From Operations...
-         //Dictionary<int, List<List<int>>> operations = Operation.OperationsGenerator(10, 20, 2);
+        //Dictionary<int, List<List<int>>> operations = Operation.OperationsGenerator(10, 20, 2);
         #endregion
-               
+
         #region Mode_Manu=========================================================
         void CreateButtons()
         {
@@ -351,6 +352,47 @@ namespace arc
         #region ModeSource========================================================
         void CreateButtonsModeSource()
         {
+            string pathAdviseProgramData = AppDomain.CurrentDomain.BaseDirectory; // @"C:\advise\Data\";
+            string defConfigurationEdition = pathAdviseProgramData + @"BaseDefs13508_V2.fr";
+            Dictionary<string, CodeObservable> observablesNorme = null; // Base des observables
+            ObservablesReader observablesReader = new ObservablesReader(defConfigurationEdition, ref observablesNorme);
+
+            List<string> abc = new List<string>();
+            abc.Add("BAF");
+            foreach (var item in observablesNorme)
+            {
+                string key = item.Key;
+                if (key.IndexOf(abc[0]) < 0 || key == abc[0])
+                    continue;
+
+                string clef = abc[0];
+                for (int i = abc[0].Length; i < key.Length; i++)
+                {
+                    clef += ";" + key[i];
+                }
+                abc.Add(clef);
+            }
+
+            //abc.Add("A");
+            //abc.Add("B");
+            //abc.Add("C");
+            //abc.Add("D");
+
+            //foreach (var item in observablesNorme)
+            //{
+            //    string key = item.Key;
+            //    if (key.IndexOf(abc[0]) < 0 || key == abc[0])
+            //        continue;
+
+            //    string clef = abc[0];
+            //    for (int i = abc[0].Length; i < key.Length; i++)
+            //    {
+            //        clef += ";" + key[i];
+            //    }
+            //    abc.Add(clef);
+            //}
+
+            #region commenté
             //List<string> abc = new List<string>() {
             //                                        "ABC",
             //                                        "ABC;A", "ABC;B", "ABC;C", "ABC;D",
@@ -364,13 +406,12 @@ namespace arc
             //                                        "ABC;A;B;B;A","ABC;A;B;B;B",
             //                                    };
 
-
-            List<string> abc = new List<string>() {
-                                                    "ABC",
-                                                    "ABC;A", "ABC;B",
-                                                    "ABC;A;A","ABC;A;B",
-                                                    "ABC;A;A;A","ABC;A;A;B"
-                                                };
+            //List<string> abc = new List<string>() {
+            //                                        "ABC",
+            //                                        "ABC;A", "ABC;B",
+            //                                        "ABC;A;A","ABC;A;B",
+            //                                        "ABC;A;A;A","ABC;A;A;B"
+            //                                    };
 
             //List<string> abc_light = new List<string>() {
             //                                        "ABC;B",
@@ -379,6 +420,7 @@ namespace arc
             //                                        "ABC;C;A","ABC;C;B","ABC;C;C",
             //                                        "ABC;D;A","ABC;D;B","ABC;D;C","ABC;D;D"
             //                                    };
+            #endregion
 
             ABC = new RingButtons(abc, new string[1] { ";" });
             grd.Children.Clear();

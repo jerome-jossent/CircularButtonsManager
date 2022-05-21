@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMGU.CV", "EMGU.CV.csproj",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "arc", "arc\arc.csproj", "{A0594EC4-B56A-4CF0-9B06-719B40E3A689}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Standard_UC_JJO", "..\Standard_UC_JJO\Standard_UC_JJO.csproj", "{24BDEB06-738E-4392-A78D-163185A26329}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Standard_UC_JJO", "..\Standard_UC_JJO\Standard_UC_.Net4_JJO\Standard_UC_JJO.csproj", "{24BDEB06-738E-4392-A78D-163185A26329}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -33,7 +33,7 @@ namespace arc
 
             anneau_index = deg.Length - 1;
 
-            //trouver le parent
+            //trouver le nom du parent dans le nom
             string parent_name = "";
             for (int i = 0; i < deg.Length - 1; i++)
             {
@@ -45,7 +45,6 @@ namespace arc
 
             if (ringButtons.elements.ContainsKey(parent_name))
                 parent = ringButtons.elements[parent_name];
-
         }
 
         public override string ToString()
