@@ -113,7 +113,7 @@ namespace arc
                         }
                         elem.parent = parents_manquant[elem.parent_name];
 
-                        elem.parent.children.Add(elem.parent.children.Count, elem);
+                        //elem.parent.children.Add(elem.parent.children.Count, elem);
 
                         //elem.parent = origine;
                         //origine.children.Add(origine.children.Count, elem);
