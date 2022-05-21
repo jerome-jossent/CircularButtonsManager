@@ -17,28 +17,23 @@ namespace arc
         internal Dictionary<string, Button> boutons;
         public System.Windows.Point centre;
         List<SolidColorBrush> colors;
+        public Element origine = null;
+
         public RingButtons(List<string> datas, string[] charSep)
         {
+            #region create Elements
+            //elements = new Dictionary<string, Element>();
+            //for (int i = 0; i < datas.Count; i++)
+            //{
+            //    Element element = new Element(datas[i], charSep, this);
+            //    elements.Add(element.name, element);
+            //}
+            elements = Element.CreateElements(datas, charSep, this);
+            origine = Element.CompleteElements(ref elements, this);
+            #endregion
+
             float epaisseur = 100;
             float angle_origine_deg = 0;
-
-            #region create Elements
-            elements = new Dictionary<string, Element>();
-            for (int i = 0; i < datas.Count; i++)
-            {
-                Element element = new Element(datas[i], charSep, this);
-                elements.Add(element.name, element);
-            }
-
-            //quand on est parent chercher ses enfants
-            foreach (Element parent in elements.Values)
-                foreach (Element enfant in elements.Values)
-                    if (enfant.parent?.name == parent.name)
-                    {
-                        enfant.ordre = parent.children.Values.Count;
-                        parent.children.Add(enfant.ordre, enfant);
-                    }
-            #endregion
 
             #region create Rings
             anneaux = new Dictionary<int, Ring>();
@@ -65,8 +60,8 @@ namespace arc
         }
 
         public Canvas CreateRingButtons(MouseEventHandler MouseEnter,
-                                        MouseEventHandler MouseLeave,
-                                        MouseButtonEventHandler MouseDown)
+                                    MouseEventHandler MouseLeave,
+                                    MouseButtonEventHandler MouseDown)
         {
             colors = new List<SolidColorBrush>() {Brushes.Red, Brushes.Green, Brushes.Yellow, Brushes.Magenta, Brushes.Blue,
                                                 Brushes.Cyan, Brushes.Orange, Brushes.Brown, Brushes.Khaki, Brushes.Salmon };
@@ -76,6 +71,11 @@ namespace arc
 
             Canvas c = new Canvas();
 
+            //pas de découpage :                //je suis au centre et j'utilise toute la place 0->359,99°
+            origine.angle_ouverture_deb = 0;
+            origine.angle_ouverture_fin = 360;
+            origine.angle_ouverture_deg = 360;
+
             foreach (Ring anneau in anneaux.Values)
                 foreach (Element element in anneau.elements)
                 {
@@ -84,14 +84,7 @@ namespace arc
                     // angles, dépendent de :
                     // - parent : quels sont les angles du parent
                     // - combien d'enfant (dont cet élément) a ce parent ?
-                    if (element.isOrigin)
-                    {
-                        //pas de découpage :                //je suis au centre et j'utilise toute la place 0->359,99°
-                        element.angle_ouverture_deb = 0;
-                        element.angle_ouverture_fin = 360;
-                        element.angle_ouverture_deg = 360;
-                    }
-                    else
+                    if (!element.isOrigin)
                     {
                         eleParent.angle_ouverture_deg = eleParent.angle_ouverture_fin - eleParent.angle_ouverture_deb;
 
@@ -184,7 +177,7 @@ namespace arc
                 CombinedGeometry anneau = new CombinedGeometry(GeometryCombineMode.Exclude,
                                                                new EllipseGeometry(centre, r_ext, r_ext),
                                                                new EllipseGeometry(centre, r_int, r_int));
-                
+
                 // triangle - centré !!!!
                 float marge = 0;
                 //float d = (float)(marge / Math.Cos(element.angle_ouverture_deg / 2 * Math.PI / 180));

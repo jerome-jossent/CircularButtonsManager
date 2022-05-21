@@ -358,26 +358,7 @@ namespace arc
             ObservablesReader observablesReader = new ObservablesReader(defConfigurationEdition, ref observablesNorme);
 
             List<string> abc = new List<string>();
-            abc.Add("BAF");
-            foreach (var item in observablesNorme)
-            {
-                string key = item.Key;
-                if (key.IndexOf(abc[0]) < 0 || key == abc[0])
-                    continue;
-
-                string clef = abc[0];
-                for (int i = abc[0].Length; i < key.Length; i++)
-                {
-                    clef += ";" + key[i];
-                }
-                abc.Add(clef);
-            }
-
-            //abc.Add("A");
-            //abc.Add("B");
-            //abc.Add("C");
-            //abc.Add("D");
-
+            //abc.Add("BAF");
             //foreach (var item in observablesNorme)
             //{
             //    string key = item.Key;
@@ -391,6 +372,18 @@ namespace arc
             //    }
             //    abc.Add(clef);
             //}
+
+            foreach (var item in observablesNorme)
+            {
+                string clef = "";
+                for (int i = 0; i < item.Key.Length; i++)
+                {
+                    if (i > 0)
+                        clef += ";";
+                    clef += item.Key[i];
+                }
+                abc.Add(clef);
+            }
 
             #region commenté
             //List<string> abc = new List<string>() {
