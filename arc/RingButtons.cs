@@ -22,20 +22,19 @@ namespace arc
         public RingButtons(List<string> datas, string[] charSep)
         {
             #region create Elements
-            //elements = new Dictionary<string, Element>();
-            //for (int i = 0; i < datas.Count; i++)
-            //{
-            //    Element element = new Element(datas[i], charSep, this);
-            //    elements.Add(element.name, element);
-            //}
             elements = Element.CreateElements(datas, charSep, this);
-            origine = Element.CompleteElements(ref elements, this);
+            Element.CompleteElements(ref elements, this, out origine, out int nbr_anneaux);
             #endregion
 
-            float epaisseur = 100;
+            #region create Rings
+            //max 500
+            float facteur = 500f / ((nbr_anneaux + 1) * (nbr_anneaux + 1));
+            List<float> epaisseurs = new List<float>();
+            for (int i = 0; i < nbr_anneaux + 2; i++)
+                epaisseurs.Add(i * i * facteur);
+
             float angle_origine_deg = 0;
 
-            #region create Rings
             anneaux = new Dictionary<int, Ring>();
             foreach (Element ele in elements.Values)
             {
@@ -43,8 +42,8 @@ namespace arc
                     anneaux.Add(ele.anneau_index, new Ring()
                     {
                         index = ele.anneau_index,
-                        rayon_interne = ele.anneau_index * epaisseur,
-                        rayon_externe = (ele.anneau_index + 1) * epaisseur,
+                        rayon_interne = epaisseurs[ele.anneau_index],
+                        rayon_externe = epaisseurs[ele.anneau_index + 1],
                         angle_origine = angle_origine_deg,
                         ringButtons = this
                     });
@@ -113,7 +112,7 @@ namespace arc
             int i = 0;
             foreach (Element element in anneau.elements)
             {
-                Path p = DrawSecteur(element, MouseEnter, MouseLeave, MouseDown);
+                Path p = DrawSecteur(element, MouseEnter, MouseLeave, MouseDown, out Point barycentre);
                 p.Name = "ring_" + anneau.index + "_btn_" + i;
 
                 int j = i;
@@ -137,6 +136,24 @@ namespace arc
                 element.button.name = p.Name;
                 boutons.Add(element.button.name, element.button);
                 g.Children.Add(p);
+
+                TextBlock t = new TextBlock();
+                t.Text = element.display;
+                t.HorizontalAlignment = HorizontalAlignment.Center;
+                t.VerticalAlignment = VerticalAlignment.Center;
+
+                //t.Width = 30;
+                //t.Height = 30;
+                t.Foreground = Brushes.Black;
+                t.TextAlignment = TextAlignment.Center;
+                t.TextWrapping = TextWrapping.NoWrap;
+
+                //barycentre = 2/3 de distance entre r interne et r externe et avec angle = angle_secteur / 2
+
+                t.Margin = new Thickness(barycentre.X, barycentre.Y, 0, 0);
+
+                g.Children.Add(t);
+
                 i++;
 
                 Console.WriteLine(element);
@@ -157,7 +174,8 @@ namespace arc
 
         Path DrawSecteur(Element element, MouseEventHandler MouseEnter,
                                         MouseEventHandler MouseLeave,
-                                        MouseButtonEventHandler MouseDown)
+                                        MouseButtonEventHandler MouseDown,
+                         out Point barycentre)
         {
             // rayons
             float r_ext = element.anneau.rayon_externe;
@@ -169,9 +187,12 @@ namespace arc
             Path p = new Path();
             // cas origine : doit être le Premier cas !!
             if (element.parent == null || element.parent.children.Count == 1)
+            {
                 c = new CombinedGeometry(GeometryCombineMode.Exclude,
                                                            new EllipseGeometry(centre, r_ext, r_ext),
                                                            new EllipseGeometry(centre, r_int, r_int));
+                barycentre = new Point();
+            }
             else
             {
                 CombinedGeometry anneau = new CombinedGeometry(GeometryCombineMode.Exclude,
@@ -193,7 +214,17 @@ namespace arc
                 LineSegment[] s = new LineSegment[] { A, B };
                 PathFigure t = new PathFigure(centre, s, true);
                 PathGeometry triangle = new PathGeometry(new PathFigure[] { t });
+                Point d = centre;
+                d.Y -= ((r_ext - r_int) * 2 / 3 + r_int) * 2;
+                //rotation du point selon le centre
+                double angle = element.angle_ouverture_deb + element.angle_ouverture_deg / 2;
+                angle *= Math.PI / 180;
 
+                d = rotate_point(centre.X, centre.Y, angle, d);
+                d.X -= centre.X;
+                d.Y -= centre.Y;
+
+                barycentre = d;
                 // Secteur
                 c = new CombinedGeometry(GeometryCombineMode.Intersect, anneau, triangle);
                 p.RenderTransform = new RotateTransform(element.angle_ouverture_deb + element.angle_ouverture_deg / 2, centre.X, centre.Y);
@@ -205,7 +236,23 @@ namespace arc
             p.MouseLeave += MouseLeave;
             //p.SetValue(RenderOptions.EdgeModeProperty, EdgeMode.Unspecified);
             p.Stroke = Brushes.Black;
-            p.StrokeThickness = 2;
+            p.StrokeThickness = 0.2;
+            return p;
+        }
+
+        Point rotate_point(double cx, double cy, double angle, Point p)
+        {
+            double s = Math.Sin(angle);
+            double c = Math.Cos(angle);
+            // translate point back to origin:
+            p.X -= cx;
+            p.Y -= cy;
+            // rotate point
+            double Xnew = p.X * c - p.Y * s;
+            double Ynew = p.X * s + p.Y * c;
+            // translate point back:
+            p.X = Xnew + cx;
+            p.Y = Ynew + cy;
             return p;
         }
 

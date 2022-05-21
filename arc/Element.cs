@@ -53,7 +53,7 @@ namespace arc
         public Element(string name, string[] charSep, RingButtons ringButtons)
         {
             this.name = name;
-            this.display = name;
+            this.display = name.Replace(charSep[0], "");
             this.ringButtons = ringButtons;
 
             deg = name.Split(charSep, StringSplitOptions.RemoveEmptyEntries);
@@ -73,7 +73,7 @@ namespace arc
         public Element(string name, RingButtons ringButtons, bool isOrigin)
         {
             this.name = name;
-            this.display = name;
+            this.display = name.Replace(";", "");
             this.ringButtons = ringButtons;
             this.isOrigin = isOrigin;
         }
@@ -91,42 +91,36 @@ namespace arc
             return elements;
         }
 
-        public static Element CompleteElements(ref Dictionary<string, Element> elements, RingButtons ringButtons)
+        public static void CompleteElements(ref Dictionary<string, Element> elements, RingButtons ringButtons,
+            out Element origine, out int nbr_anneaux)
         {
             //Dictionary<string, Element> orphelins = new Dictionary<string, Element>();
             Dictionary<string, Element> parents_manquant = new Dictionary<string, Element>();
-            Element origine = null;
 
-            //quand il n'y a pas de parent en créer un 
-            if (origine == null)
+            origine = new Element("retour", ringButtons, true);
+            foreach (Element elem in elements.Values)
             {
-                origine = new Element("retour", ringButtons, true);
-                foreach (Element elem in elements.Values)
+                if (elem.parent == null)
                 {
-                    if (elem.parent == null)
+                    if (!parents_manquant.ContainsKey(elem.parent_name))
                     {
-                        if (!parents_manquant.ContainsKey(elem.parent_name))
-                        {
-                            Element newParent = new Element(elem.parent_name, ringButtons, false);
-                            newParent.parent = origine;
-                            parents_manquant.Add(elem.parent_name, newParent);
-                        }
-                        elem.parent = parents_manquant[elem.parent_name];
-
-                        //elem.parent.children.Add(elem.parent.children.Count, elem);
-
-                        //elem.parent = origine;
-                        //origine.children.Add(origine.children.Count, elem);
+                        Element newParent = new Element(elem.parent_name, ringButtons, false);
+                        newParent.parent = origine;
+                        parents_manquant.Add(elem.parent_name, newParent);
                     }
+                    elem.parent = parents_manquant[elem.parent_name];
+
+                    //elem.parent.children.Add(elem.parent.children.Count, elem);
+
+                    //elem.parent = origine;
+                    //origine.children.Add(origine.children.Count, elem);
                 }
-
-                elements.Add(origine.name, origine);
-                foreach (var item in parents_manquant.Values)
-                    elements.Add(item.name, item);
-
-                //if (elem.parent == null)
-                //    elem.parent = parentAbsolu;
             }
+
+            elements.Add(origine.name, origine);
+            foreach (var item in parents_manquant.Values)
+                elements.Add(item.name, item);
+
 
             //quand on est parent chercher ses enfants
             foreach (Element parent in elements.Values)
@@ -138,7 +132,7 @@ namespace arc
                     }
 
             //set anneau_index
-            int anneau_max = 0;
+            nbr_anneaux = 0;
             foreach (Element e in elements.Values)
             {
                 e.anneau_index = 0;
@@ -148,13 +142,13 @@ namespace arc
                     e.anneau_index++;
                     p = p.parent;
                 }
-                if (anneau_max < e.anneau_index)
-                    anneau_max = e.anneau_index;
+                if (nbr_anneaux < e.anneau_index)
+                    nbr_anneaux = e.anneau_index;
             }
 
             //order elements by anneau_index (then by name ?)
             Dictionary<string, Element> elements_ordered = new Dictionary<string, Element>();
-            for (int i = 0; i < anneau_max+1; i++)
+            for (int i = 0; i < nbr_anneaux + 1; i++)
             {
                 foreach (var ele in elements)
                 {
@@ -166,7 +160,6 @@ namespace arc
             }
 
             elements = elements_ordered;
-            return origine;
         }
 
         public override string ToString()
